@@ -39,7 +39,7 @@
     "typescript": "~5.4.2"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,scss,md,html,json}": [
+    "**/*.{js,ts,scss,md,html,json}": [
       "prettier --write",
       "git add"
     ]
