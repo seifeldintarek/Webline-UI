@@ -1,0 +1,24 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 22rem;">
+        <h3 class="text-center mb-4">Login</h3>
+        <form>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <div class="text-center mt-3">
+                <p class="mb-0">Not a member?
+                    <a href="#" (click)="navigateToSignup($event)" class="text-decoration-none">Register</a>
+                </p>
+            </div>
+        </form>
+        <p class="text-center mt-3">
+            <a href="#">Forgot password?</a>
+        </p>
+    </div>
+</div>
