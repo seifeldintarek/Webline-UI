@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './groupmember.component.html',
   styleUrl: './groupmember.component.scss'
 })
-export class GroupmemberComponent {
+export class GroupMember {
 
 }
