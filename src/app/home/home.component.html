@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="sidebar">
+        <button (click)="selectView('search')" class="icon-btn">🔍</button>
+        <button (click)="selectView('chat')">Chat</button>
+        <button (click)="selectView('friends')">Friends</button>
+        <button (click)="selectView('requests')">Requests</button>
+    </div>
+
+    <div class="content">
+        <ng-container [ngSwitch]="selectedView">
+            <app-search *ngSwitchCase="'search'"></app-search>
+            <!-- <app-chat *ngSwitchCase="'chat'"></app-chat> -->
+            <!-- <app-friends *ngSwitchCase="'friends'"></app-friends> -->
+        </ng-container>
+    </div>
+</div>

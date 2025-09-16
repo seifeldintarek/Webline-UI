@@ -1,0 +1,13 @@
+<div class="search-container">
+    <input type="text" [(ngModel)]="query" (keyup.enter)="search()" placeholder="Search..." class="search-input" />
+
+    <div class="users">
+        <div class="result-item" *ngFor="let user of users">
+            <img [src]="user.image" alt="profile" class="avatar" />
+            <div class="user-info">
+                <div class="fullName">{{ user.fullName }}</div>
+                <div class="email">{{ user.email }}</div>
+            </div>
+        </div>
+    </div>
+</div>

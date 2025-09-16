@@ -27,7 +27,7 @@ export class SignupComponent implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
-      mobilePhone: ['', [Validators.required, Validators.pattern('^01[0125][0-9]{8}$')]],
+      mobilePhone: ['', [Validators.required, Validators.pattern('^01[0125][0-9]{8}$'), Validators.minLength(11), Validators.maxLength(11)]],
       password: ['', [Validators.required, Validators.minLength(10)]],
       image: [null]
     });
@@ -44,11 +44,10 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.valid) {
       this.authService.signup(this.signupForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/login']);
+          this.router.navigate(['login']);
           console.log(`User ${this.signupForm.value.firstName} registered successfully`);
         },
         error: (err) => console.error(err),
-
       });
     }
   }

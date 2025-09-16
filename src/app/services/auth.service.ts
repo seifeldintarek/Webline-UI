@@ -11,7 +11,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  currewntUserToken: string | null = null;
 
+  assignToken(token: string) {
+    this.currewntUserToken = token;
+    console.log(this.currewntUserToken);
+  }
   signup(user: UserModel) {
     return this.http.post(this.authUrl + 'signup', user);
   }
@@ -25,6 +30,6 @@ export class AuthService {
       mobilePhone: '',
       id: null
     };
-    return this.http.post(this.authUrl + 'login', user);
+    return this.http.post(this.authUrl + 'login', user)
   }
 }

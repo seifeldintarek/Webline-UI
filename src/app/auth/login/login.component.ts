@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
 
   navigateToSignup(event: Event) {
     event.preventDefault();
-    this.router.navigate(['/auth/signup']).catch(err => {
+    this.router.navigate(['signup']).catch(err => {
       console.error('Navigation to signup failed', err);
     });
   }
@@ -47,8 +47,14 @@ export class LoginComponent implements OnInit {
 
   private login(email: string, password: string) {
     this.authService.login(email, password).subscribe({
-      next: (response) => console.log('Login successful:', response),
-      error: (error) => console.error('Login failed:', error),
+      next: (response: any): void => {
+        console.log('Login successful:', response);
+        this.authService.assignToken(response['access_token']);
+        this.router.navigate(['home']).catch(err => {
+          console.error('Navigation to home failed', err);
+        });
+      },
+      error: (error) => console.log('Error : ', error)
     });
   }
 }
