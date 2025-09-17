@@ -11,11 +11,15 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  currewntUserToken: string | null = null;
+  currentUserToken: string | null = null;
+  id: number | null = null;
+  email: string | null = null;
+  fullName: string | null = null;
 
   assignToken(token: string) {
-    this.currewntUserToken = token;
-    console.log(this.currewntUserToken);
+    this.currentUserToken = token;
+    localStorage.setItem('access_token', token);
+    this.decodeToken(token);
   }
   signup(user: UserModel) {
     return this.http.post(this.authUrl + 'signup', user);
@@ -32,4 +36,30 @@ export class AuthService {
     };
     return this.http.post(this.authUrl + 'login', user)
   }
+
+
+  private decodeToken(token: string) {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    this.id = Number(decoded.sub);
+    this.email = decoded.email;
+    this.fullName = decoded.fullName;
+  }
+
+  loadTokenFromStorage() {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      this.currentUserToken = token;
+      this.decodeToken(token);
+    }
+  }
+  logout() {
+    this.currentUserToken = null;
+    this.id = null;
+    this.email = null;
+    this.fullName = null;
+    localStorage.removeItem('access_token');
+  }
+
+
 }
