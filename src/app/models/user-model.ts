@@ -6,4 +6,5 @@ export interface UserModel {
     email: string | null;
     image: string | null;
     mobilePhone: string | null;
+    fullName?: string | null;
 }

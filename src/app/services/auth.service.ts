@@ -11,10 +11,10 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  currentUserToken: string | null = null;
-  id: number | null = null;
-  email: string | null = null;
-  fullName: string | null = null;
+  private currentUserToken: string | null = null;
+  private id: number | null = null;
+  private email: string | null = null;
+  private fullName: string | null = null;
 
   assignToken(token: string) {
     this.currentUserToken = token;
@@ -60,6 +60,10 @@ export class AuthService {
     this.fullName = null;
     localStorage.removeItem('access_token');
   }
+
+  getId() { return this.id; }
+  getFullName() { return this.fullName; }
+  getEmail() { return this.email; }
 
 
 }
