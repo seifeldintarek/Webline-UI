@@ -1,11 +1,17 @@
 <div class="friends-container">
     <div class="friends">
-        <div class="result-item" *ngFor="let friend of getFriends()">
+        <div class="result-item" *ngFor="let friend of friends">
             <img [src]="friend.image" alt="profile" class="avatar" />
             <div class="friend-info">
                 <div class="fullName">{{ friend.fullName }}</div>
                 <div class="email">{{ friend.email }}</div>
             </div>
         </div>
+    </div>
+
+    <div class="pagination">
+        <button (click)="prevPage()" [disabled]="page === 1">⬅ Prev</button>
+        <span>Page {{ page }}</span>
+        <button (click)="nextPage()" [disabled]="friends.length < 10">Next ➡</button>
     </div>
 </div>

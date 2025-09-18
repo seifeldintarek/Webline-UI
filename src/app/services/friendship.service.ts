@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/user-model';
+import { FriendshipModel } from '../models/friendship-model';
+import { PageResponse } from '../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -10,21 +12,38 @@ export class FriendshipService {
 
   private apiUrl = "http://localhost:3000/api/users";
   private friends: UserModel[] = [];
+  private friendRequests: UserModel[] = [];
 
   constructor(private http: HttpClient,
     private authService: AuthService
   ) { }
 
-  getUserFriends() {
+  getUserFriends(page: number = 1) {
     const userId = this.authService.getId();
-    this.http.get<UserModel[]>(`${this.apiUrl}/${userId}/friends`).subscribe({
-      next: (response) => {
-        this.friends = response;
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${page}`);
+  }
+
+  getMyFriendRequests(page: number = 1) {
+    const userId = this.authService.getId();
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${page}`);
+  }
+  addFriend(addedFriend: UserModel) {
+    const userId = this.authService.getId();
+    const friendship: FriendshipModel = {
+      id: null,
+      senderId: userId,
+      receiverId: addedFriend.id!,
+      status: null,
+      createdAt: null,
+      updatedAt: null
+    };
+    this.http.post<UserModel>(this.apiUrl + "/addFriend", friendship).subscribe({
+      next: (friend) => {
+        this.friends.push(friend);
       },
       error: (error) => {
-        console.error('Error fetching friends:', error);
+        console.error('Error adding friend:', error);
       }
     });
-    return this.friends;
   }
 }

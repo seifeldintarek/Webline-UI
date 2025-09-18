@@ -1,6 +1,8 @@
 <div class="search-container">
+    <!-- 🔎 Search bar -->
     <input type="text" [(ngModel)]="query" (keyup.enter)="search()" placeholder="Search..." class="search-input" />
 
+    <!-- 👥 Users list -->
     <div class="users">
         <div class="result-item" *ngFor="let user of users">
             <img [src]="user.image" alt="profile" class="avatar" />
@@ -8,6 +10,19 @@
                 <div class="fullName">{{ user.fullName }}</div>
                 <div class="email">{{ user.email }}</div>
             </div>
+
+            <!-- Button shows Add or Pending depending on status -->
+            <button *ngIf="!isFriend(user) || isPending(user)" (click)="!isPending(user) && addFriend(user)"
+                class="add-btn" [disabled]="isPending(user)">
+                {{ isPending(user) ? 'Pending' : 'Add' }}
+            </button>
         </div>
+    </div>
+
+    <!-- ⬅➡ Pagination controls -->
+    <div class="pagination">
+        <button (click)="prevPage()" [disabled]="page === 1">⬅ Prev</button>
+        <span>Page {{ page }}</span>
+        <button (click)="nextPage()" [disabled]="users.length < 10">Next ➡</button>
     </div>
 </div>
