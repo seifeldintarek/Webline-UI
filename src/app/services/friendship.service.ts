@@ -12,7 +12,6 @@ export class FriendshipService {
 
   private apiUrl = "http://localhost:3000/api/users";
   private friends: UserModel[] = [];
-  private friendRequests: UserModel[] = [];
 
   constructor(private http: HttpClient,
     private authService: AuthService
@@ -45,5 +44,8 @@ export class FriendshipService {
         console.error('Error adding friend:', error);
       }
     });
+  }
+  removeRequest(friendship: FriendshipModel) {
+    return this.http.delete(`${this.apiUrl}/deleteFriendship`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
   }
 }

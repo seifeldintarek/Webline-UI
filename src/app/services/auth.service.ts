@@ -28,7 +28,7 @@ export class AuthService {
     return localStorage.getItem('access_token');
   }
   signup(user: UserModel) {
-    return this.http.post(this.authUrl + 'signup', user, { headers: { Authorization: `Bearer ${this.getToken()}` } });
+    return this.http.post<UserModel>(this.authUrl + 'signup', user);
   }
   login(email: string, password: string) {
     const user: UserModel = {

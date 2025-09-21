@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../search/search.component';
+import { Router } from '@angular/router';
 import { FriendshipComponent } from '../friendship/friendship.component';
 import { AuthService } from '../services/auth.service';
 
@@ -12,7 +13,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.authService.initUserFromToken();
@@ -24,5 +25,10 @@ export class HomeComponent implements OnInit {
     this.selectedView = view;
   }
 
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['login'], { replaceUrl: true })
+      .catch(err => console.error('Navigation to login failed', err));
+  }
 
 }

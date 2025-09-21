@@ -12,8 +12,7 @@
             </div>
 
             <!-- Button shows Add or Pending depending on status -->
-            <button *ngIf="!isFriend(user) || isPending(user)" (click)="!isPending(user) && addFriend(user)"
-                class="add-btn" [disabled]="isPending(user)">
+            <button *ngIf="!isFriend(user) || isPending(user)" (click)="addFriend(user)" class="add-btn">
                 {{ isPending(user) ? 'Pending' : 'Add' }}
             </button>
         </div>

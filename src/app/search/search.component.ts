@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FriendshipService } from '../services/friendship.service';
 import { PageResponse } from '../models/page-response';
+import { FriendshipModel } from '../models/friendship-model';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-search',
@@ -19,7 +21,8 @@ export class SearchComponent implements OnInit {
   friendRequests: UserModel[] = [];
 
   constructor(private searchService: SearchService,
-    private friendshipService: FriendshipService
+    private friendshipService: FriendshipService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -67,6 +70,30 @@ export class SearchComponent implements OnInit {
   }
 
   addFriend(user: UserModel) {
-    this.friendshipService.addFriend(user);
+    const isPending = this.friendRequests.some(req => req.id === user.id);
+
+    if (isPending) {
+      const friendship: FriendshipModel = {
+        id: null,
+        senderId: user.id!,
+        receiverId: this.authService.getId()!,
+        status: null,
+        createdAt: null,
+        updatedAt: null
+      };
+
+      this.friendshipService.removeRequest(friendship).subscribe({
+        next: () => {
+          this.friendRequests = this.friendRequests.filter(req => req.id !== user.id);
+        },
+        error: (err) => console.error('Error removing friend request:', err)
+      });
+
+    } else {
+      this.friendRequests.push(user);
+      this.friendshipService.addFriend(user);
+    }
   }
+
+
 }
