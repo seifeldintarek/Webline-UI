@@ -47,14 +47,14 @@ export class LoginComponent implements OnInit {
 
   private login(email: string, password: string) {
     this.authService.login(email, password).subscribe({
-      next: (response: any): void => {
-        console.log('Login successful:', response);
-        this.authService.assignToken(response['access_token']);
-        this.router.navigate(['home']).catch(err => {
-          console.error('Navigation to home failed', err);
-        });
+      next: (res) => {
+        this.authService.assignToken(res.access_token);
+        this.router.navigate(['home']).catch(err => console.error('Navigation failed', err));
       },
-      error: (error) => console.log('Error : ', error)
+      error: () => {
+        console.error('Login failed');
+        this.loginForm.reset();
+      }
     });
   }
 }

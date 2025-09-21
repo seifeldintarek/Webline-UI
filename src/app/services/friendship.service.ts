@@ -20,24 +20,24 @@ export class FriendshipService {
 
   getUserFriends(page: number = 1) {
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${page}`);
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
 
   getMyFriendRequests(page: number = 1) {
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${page}`);
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
   addFriend(addedFriend: UserModel) {
     const userId = this.authService.getId();
     const friendship: FriendshipModel = {
       id: null,
-      senderId: userId,
+      senderId: this.authService.getId()!,
       receiverId: addedFriend.id!,
       status: null,
       createdAt: null,
       updatedAt: null
     };
-    this.http.post<UserModel>(this.apiUrl + "/addFriend", friendship).subscribe({
+    this.http.post<UserModel>(this.apiUrl + "/addFriend", friendship, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }).subscribe({
       next: (friend) => {
         this.friends.push(friend);
       },

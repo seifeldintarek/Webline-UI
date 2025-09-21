@@ -11,59 +11,67 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  private currentUserToken: string | null = null;
-  private id: number | null = null;
-  private email: string | null = null;
-  private fullName: string | null = null;
+  private currentUser: UserModel | null = null;
+
+  initUserFromToken() {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      this.decodeToken(token);
+    }
+  }
 
   assignToken(token: string) {
-    this.currentUserToken = token;
     localStorage.setItem('access_token', token);
-    this.decodeToken(token);
+  }
+
+  getToken() {
+    return localStorage.getItem('access_token');
   }
   signup(user: UserModel) {
-    return this.http.post(this.authUrl + 'signup', user);
+    return this.http.post(this.authUrl + 'signup', user, { headers: { Authorization: `Bearer ${this.getToken()}` } });
   }
   login(email: string, password: string) {
     const user: UserModel = {
-      email: email,
-      password: password,
+      email,
+      password,
       firstName: '',
       lastName: '',
       image: '',
       mobilePhone: '',
       id: null
     };
-    return this.http.post(this.authUrl + 'login', user)
+
+    return this.http.post<{ access_token: string }>(this.authUrl + 'login', user)
   }
 
 
+
   private decodeToken(token: string) {
-    const payload = token.split('.')[1];
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    this.id = Number(decoded.sub);
-    this.email = decoded.email;
-    this.fullName = decoded.fullName;
+    const url = "http://localhost:3000/api/users/user/info";
+    this.http.get<UserModel>(url, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
+      next: (user) => {
+        this.currentUser = user;
+      },
+      error: (error) => console.log('Error fetching user info:', error)
+    });
   }
 
   loadTokenFromStorage() {
     const token = localStorage.getItem('access_token');
     if (token) {
-      this.currentUserToken = token;
       this.decodeToken(token);
     }
   }
   logout() {
-    this.currentUserToken = null;
-    this.id = null;
-    this.email = null;
-    this.fullName = null;
+    this.currentUser = null;
     localStorage.removeItem('access_token');
   }
 
-  getId() { return this.id; }
-  getFullName() { return this.fullName; }
-  getEmail() { return this.email; }
+  getId() { return this.currentUser?.id; }
+  getFullName() { return this.currentUser?.fullName; }
+  getEmail() { return this.currentUser?.email; }
+
+  getUser() { return this.currentUser; }
 
 
 }
