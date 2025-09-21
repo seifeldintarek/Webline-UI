@@ -26,6 +26,11 @@ export class FriendshipService {
     const userId = this.authService.getId();
     return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
+
+  getFriendRequests(page: number = 1) {
+    const userId = this.authService.getId();
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/received?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+  }
   addFriend(addedFriend: UserModel) {
     const userId = this.authService.getId();
     const friendship: FriendshipModel = {
