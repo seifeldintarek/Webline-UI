@@ -11,6 +11,7 @@ import { PageResponse } from '../models/page-response';
 export class FriendshipService {
 
   private apiUrl = "http://localhost:3000/api/users";
+  private pageParam = "&size=10&sort=id,asc";
   private friends: UserModel[] = [];
 
   constructor(private http: HttpClient,
@@ -18,18 +19,21 @@ export class FriendshipService {
   ) { }
 
   getUserFriends(page: number = 1) {
+    const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
 
   getMyFriendRequests(page: number = 1) {
+    const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
 
   getFriendRequests(page: number = 1) {
+    const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/received?page=${page}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/received?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
   addFriend(addedFriend: UserModel) {
     const userId = this.authService.getId();

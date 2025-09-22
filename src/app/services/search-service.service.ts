@@ -16,10 +16,14 @@ export class SearchService {
 
   private readonly searchUrl = "http://localhost:3000/api/users/user/search?page=";
 
+  private pageSize = "&size=10";
+  private sortBy = "&sort=id,asc";
+
   searchUsers(query: string, page: number) {
 
+    const currentPage = page - 1;
     const queryTrimmed = query.trim();
-    const url = this.searchUrl.concat(page + "&");
+    const url = this.searchUrl.concat(currentPage + this.pageSize + this.sortBy + "&");
 
     if (queryTrimmed.includes('@')) {
       return this.searchWithEmail(queryTrimmed, url);
