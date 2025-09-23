@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../search/search.component';
 import { Router } from '@angular/router';
 import { FriendshipComponent } from '../friendship/friendship.component';
+import { ChatComponent } from '../chat/chat.component';
 import { AuthService } from '../services/auth.service';
 import { RequestsComponent } from '../requests/requests.component';
 
@@ -10,7 +11,7 @@ import { RequestsComponent } from '../requests/requests.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, SearchComponent, FriendshipComponent, RequestsComponent],
+  imports: [CommonModule, SearchComponent, FriendshipComponent, RequestsComponent, ChatComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

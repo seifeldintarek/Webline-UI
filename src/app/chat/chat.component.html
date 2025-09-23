@@ -1,0 +1,136 @@
+<!-- chat-component.html -->
+<div class="chat-container">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-left">
+            <div class="avatar">DJ</div>
+            <div class="user-info">
+                <h3>Dianne Jhonson</h3>
+                <div class="online-status">
+                    <div class="online-dot"></div>
+                    <span class="status-text">Online</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <svg class="header-icon icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <svg class="header-icon icon" viewBox="0 0 24 24">
+                <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+            </svg>
+            <svg class="header-icon icon" viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-container">
+        <!-- Received Message -->
+        <div class="message">
+            <div class="message-avatar received">DJ</div>
+            <div class="message-bubble received">
+                Hi David, have you got the project report pdf?
+            </div>
+        </div>
+
+        <!-- Sent Message -->
+        <div class="message sent">
+            <div class="message-avatar sent">D</div>
+            <div class="message-bubble sent">
+                No, I did not get it
+            </div>
+        </div>
+
+        <!-- Long Received Message -->
+        <div class="message">
+            <div class="message-avatar received">DJ</div>
+            <div class="message-bubble received">
+                Ok, I will just send it here. Plz be sure to fill the details by today end of the day.
+            </div>
+        </div>
+
+        <!-- File Message -->
+        <div class="message">
+            <div class="message-avatar received">DJ</div>
+            <div class="file-message">
+                <div class="file-icon">PDF</div>
+                <div class="file-info">
+                    <div class="file-name">project_report.pdf</div>
+                    <div class="file-type">Document</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sent Message -->
+        <div class="message sent">
+            <div class="message-avatar sent">D</div>
+            <div class="message-bubble sent">
+                Ok, Should I send it over email as well after filling the details.
+            </div>
+        </div>
+
+        <!-- Received Message -->
+        <div class="message">
+            <div class="message-avatar received">DJ</div>
+            <div class="message-bubble received">
+                Ya, I'll be adding more team members to it.
+            </div>
+        </div>
+
+        <!-- Short Sent Message -->
+        <div class="message sent">
+            <div class="message-avatar sent">D</div>
+            <div class="message-bubble sent">
+                OK
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator">
+            <div class="message-avatar received">DJ</div>
+            <div class="typing-bubble">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <div class="typing-text">Typing...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="chat-input">
+        <svg class="input-icon icon" viewBox="0 0 24 24">
+            <path
+                d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L10.3 16.53a2 2 0 0 1-2.83-2.83l8.49-8.49">
+            </path>
+        </svg>
+
+        <input type="text" class="message-input" placeholder="Write Something">
+
+        <svg class="input-icon icon" viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+
+        <svg class="input-icon icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+
+        <button class="send-button">
+            <svg class="send-icon icon" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>

@@ -5,12 +5,13 @@ import { UserModel } from '../models/user-model';
 import { FriendshipModel } from '../models/friendship-model';
 import { AuthService } from '../services/auth.service';
 import { ButtonModule } from 'primeng/button';
+import { ChatComponent } from '../chat/chat.component';
 
 
 @Component({
   selector: 'app-friendship',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, ChatComponent],
   templateUrl: './friendship.component.html',
   styleUrls: ['./friendship.component.scss']
 })
@@ -21,6 +22,7 @@ export class FriendshipComponent implements OnInit {
 
   friends: UserModel[] = [];
   page: number = 1;
+  selectedFriend: UserModel | null = null;
 
   ngOnInit() {
     this.getFriends();
@@ -34,9 +36,6 @@ export class FriendshipComponent implements OnInit {
     });
   }
 
-  openChat(uid: number) {
-
-  }
 
   removeFriend(uid: number) {
     const currentuser = this.authService.getId();
@@ -54,6 +53,14 @@ export class FriendshipComponent implements OnInit {
       },
       error: (err) => console.error('Error removing friend request:', err)
     });
+  }
+
+  openChat(friend: UserModel) {
+    this.selectedFriend = friend;
+  }
+
+  closeChat() {
+    this.selectedFriend = null;
   }
 
   nextPage() {
