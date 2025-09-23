@@ -34,33 +34,33 @@ export class SignupComponent implements OnInit {
     });
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      if (allowedTypes.includes(file.type)) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.signupForm.patchValue({
-            image: reader.result as string
-          });
-          console.log('File converted to base64 successfully');
-        };
-        reader.onerror = () => {
-          console.error('Error reading file');
-          event.target.value = ''; // Reset file input on error
-          this.signupForm.patchValue({ image: null });
-        };
-        reader.readAsDataURL(file);
-      } else {
-        console.error('Invalid file type. Please select a JPEG or PNG image.');
-        event.target.value = '';
-        this.signupForm.patchValue({ image: null });
-      }
-    } else {
-      this.signupForm.patchValue({ image: null });
-    }
-  }
+  // onFileChange(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  //     if (allowedTypes.includes(file.type)) {
+  //       const reader = new FileReader();
+  //       reader.onload = () => {
+  //         this.signupForm.patchValue({
+  //           image: reader.result as string
+  //         });
+  //         console.log('File converted to base64 successfully');
+  //       };
+  //       reader.onerror = () => {
+  //         console.error('Error reading file');
+  //         event.target.value = ''; // Reset file input on error
+  //         this.signupForm.patchValue({ image: null });
+  //       };
+  //       reader.readAsDataURL(file);
+  //     } else {
+  //       console.error('Invalid file type. Please select a JPEG or PNG image.');
+  //       event.target.value = '';
+  //       this.signupForm.patchValue({ image: null });
+  //     }
+  //   } else {
+  //     this.signupForm.patchValue({ image: null });
+  //   }
+  // }
 
   onSubmit(): void {
     if (this.signupForm.valid) {

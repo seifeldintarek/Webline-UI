@@ -6,6 +6,9 @@
                 <div class="fullName">{{ friend.fullName }}</div>
                 <div class="email">{{ friend.email }}</div>
             </div>
+            <p-button [label]="accepted ? 'Remove' : 'Accept'" [severity]="accepted ? 'danger' : 'success'"
+                [rounded]="true" styleClass="my-btn" (click)="toggleFriend(friend.id!)">
+            </p-button>
         </div>
     </div>
 

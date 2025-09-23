@@ -11,10 +11,12 @@
                 <div class="email">{{ user.email }}</div>
             </div>
 
-            <!-- Button shows Add or Pending depending on status -->
-            <button *ngIf="!isFriend(user) || isPending(user)" (click)="addFriend(user)" class="add-btn">
-                {{ isPending(user) ? 'Pending' : 'Add' }}
-            </button>
+            <p-button *ngIf="!isFriend(user) || isPending(user)" (click)="addFriend(user)"
+                [label]="isPending(user) ? 'Cancel' : 'Add'" [raised]="true"
+                [severity]="isPending(user) ? 'danger' : 'success'" styleClass="custom-btn">
+            </p-button>
+
+
         </div>
     </div>
 

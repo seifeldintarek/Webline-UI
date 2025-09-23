@@ -2,16 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { FriendshipService } from '../services/friendship.service';
 import { CommonModule } from '@angular/common';
 import { UserModel } from '../models/user-model';
+import { FriendshipModel } from '../models/friendship-model';
+import { AuthService } from '../services/auth.service';
+import { ButtonModule } from 'primeng/button';
+
 
 @Component({
   selector: 'app-friendship',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonModule],
   templateUrl: './friendship.component.html',
   styleUrls: ['./friendship.component.scss']
 })
 export class FriendshipComponent implements OnInit {
-  constructor(private friendshipService: FriendshipService) { }
+  constructor(private friendshipService: FriendshipService,
+    private authService: AuthService
+  ) { }
 
   friends: UserModel[] = [];
   page: number = 1;
@@ -25,6 +31,28 @@ export class FriendshipComponent implements OnInit {
       next: (data) => {
         this.friends = data.content;
       }
+    });
+  }
+
+  openChat(uid: number) {
+
+  }
+
+  removeFriend(uid: number) {
+    const currentuser = this.authService.getId();
+    let friendship: FriendshipModel = {
+      senderId: uid,
+      receiverId: currentuser!,
+      createdAt: null,
+      id: null,
+      status: null,
+      updatedAt: null
+    }
+    this.friendshipService.removeRequest(friendship).subscribe({
+      next: () => {
+        this.friends = this.friends.filter(req => req.id !== uid);
+      },
+      error: (err) => console.error('Error removing friend request:', err)
     });
   }
 

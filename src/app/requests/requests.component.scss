@@ -1,13 +1,36 @@
 .friends-container {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    height: 100vh;
+    /* full viewport height */
+    padding: 10px;
+    /* normal padding */
+    box-sizing: border-box;
 }
 
 .friends {
+    flex: 1;
+    /* take remaining space */
+    overflow-y: auto;
+    /* scroll if content is too tall */
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+}
+
+.my-btn {
+    background-color: green;
+    /* background */
+    color: white;
+    /* text color */
+    border-radius: 8px;
+    /* rounded corners */
+    height: 30px;
+    /* button height */
+    font-size: 12px;
+    /* text size */
+    padding: 0 10px;
+    /* horizontal padding */
 }
 
 .result-item {
@@ -41,7 +64,6 @@
 
 
 .pagination {
-    margin-top: 15px;
     display: flex;
     justify-content: center;
     gap: 10px;

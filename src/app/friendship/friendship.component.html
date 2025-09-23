@@ -6,6 +6,11 @@
                 <div class="fullName">{{ friend.fullName }}</div>
                 <div class="email">{{ friend.email }}</div>
             </div>
+            <p-button label="Remove" severity="danger" [rounded]="true" styleClass="my-btn"
+                (click)="removeFriend(friend.id!)">
+            </p-button>
+            <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openChat(friend.id!)">
+            </p-button>
         </div>
     </div>
 

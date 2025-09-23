@@ -57,4 +57,7 @@ export class FriendshipService {
   removeRequest(friendship: FriendshipModel) {
     return this.http.delete(`${this.apiUrl}/deleteFriendship`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
   }
+  acceptRequest(friendship: FriendshipModel) {
+    return this.http.post<FriendshipModel>(`${this.apiUrl}/acceptFriend`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
+  }
 }

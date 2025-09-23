@@ -1,7 +1,11 @@
 .search-container {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    height: 100vh;
+    /* full viewport height */
+    padding: 10px;
+    /* normal padding */
+    box-sizing: border-box;
 }
 
 .search-input {
@@ -15,9 +19,25 @@
 }
 
 .users {
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    padding-right: 5px;
+}
+
+.custom-btn {
+    height: 28px;
+    /* smaller height */
+    min-width: 60px;
+    /* optional smaller width */
+    font-size: 12px;
+    /* smaller label text */
+    padding: 0 8px;
+    /* smaller horizontal padding */
+    line-height: 28px;
+    /* vertically center the text */
 }
 
 .result-item {
@@ -50,7 +70,6 @@
 }
 
 .pagination {
-    margin-top: 15px;
     display: flex;
     justify-content: center;
     gap: 10px;

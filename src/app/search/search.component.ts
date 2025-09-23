@@ -6,12 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { FriendshipService } from '../services/friendship.service';
 import { PageResponse } from '../models/page-response';
 import { FriendshipModel } from '../models/friendship-model';
+import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ButtonModule],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
