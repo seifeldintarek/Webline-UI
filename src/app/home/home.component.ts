@@ -6,12 +6,13 @@ import { FriendshipComponent } from '../friendship/friendship.component';
 import { ChatComponent } from '../chat/chat.component';
 import { AuthService } from '../services/auth.service';
 import { RequestsComponent } from '../requests/requests.component';
+import { UpdateProfileComponent } from '../updateprofile/updateprofile.component';
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, SearchComponent, FriendshipComponent, RequestsComponent, ChatComponent],
+  imports: [CommonModule, SearchComponent, FriendshipComponent, RequestsComponent, ChatComponent, UpdateProfileComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

@@ -53,44 +53,6 @@ export class RequestsComponent implements OnInit {
     }
   }
 
-
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      if (allowedTypes.includes(file.type)) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.image = reader.result as string;
-          console.log('File converted to base64 successfully');
-
-          // Move the upload here so it happens after the file is read
-          this.userService.setImage(this.image).subscribe({
-            next: (response) => {
-              console.log('Image uploaded successfully:', response);
-            },
-            error: (error) => {
-              console.error('Error uploading image:', error);
-            }
-          });
-        };
-        reader.onerror = () => {
-          console.error('Error reading file');
-          event.target.value = ''; // Reset file input on error
-          this.image = '';
-        };
-        reader.readAsDataURL(file);
-      } else {
-        console.error('Invalid file type. Please select a JPEG or PNG image.');
-        event.target.value = '';
-        this.image = '';
-      }
-    } else {
-      console.error('No file selected');
-      this.image = '';
-    }
-  }
-
   toggleFriend(id: number) {
     this.accepted = !this.accepted;
     if (this.accepted) {

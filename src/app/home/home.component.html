@@ -4,6 +4,7 @@
         <button (click)="selectView('chat')">Chat</button>
         <button (click)="selectView('friends')">Friends</button>
         <button (click)="selectView('requests')">Requests</button>
+        <button (click)="selectView('update')">Account</button>
         <button (click)="logout()">Logout</button>
     </div>
 
@@ -11,6 +12,7 @@
         <ng-container [ngSwitch]="selectedView">
             <app-search *ngSwitchCase="'search'"></app-search>
             <app-chat *ngSwitchCase="'chat'"></app-chat>
+            <app-updateprofile *ngSwitchCase="'update'"></app-updateprofile>
             <app-friendship *ngSwitchCase="'friends'"></app-friendship>
             <app-requests *ngSwitchCase="'requests'"></app-requests>
         </ng-container>

@@ -71,7 +71,10 @@ export class AuthService {
   getFullName() { return this.currentUser?.fullName; }
   getEmail() { return this.currentUser?.email; }
 
-  getUser() { return this.currentUser; }
+  getUser(): UserModel { return this.currentUser!; }
 
+  setCurrentUser(newUser: UserModel) {
+    this.currentUser = { ...newUser };
+  }
 
 }
