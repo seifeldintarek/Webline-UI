@@ -4,38 +4,50 @@ import { AuthService } from './auth.service';
 import { UserModel } from '../models/user-model';
 import { FriendshipModel } from '../models/friendship-model';
 import { PageResponse } from '../models/page-response';
-import { ConversationDTO, ConversationType } from '../models/conversation-model';
+import {
+  ConversationDTO,
+  ConversationType,
+} from '../models/conversation-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FriendshipService {
-
-  private apiUrl = "http://localhost:3000/api/users";
+  private apiUrl = 'http://localhost:3000/api/users';
   private convUrl = 'http://localhost:3000/api/messages/conversation';
-  private pageParam = "&size=10&sort=id,asc";
+  private pageParam = '&size=10&sort=id,asc';
   private friends: UserModel[] = [];
 
-  constructor(private http: HttpClient,
-    private authService: AuthService
-  ) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {}
 
   getUserFriends(page: number = 1) {
     const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/friends?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(
+      `${this.apiUrl}/${userId}/friends?page=${currentPage}&${this.pageParam}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
+    );
   }
 
   getMyFriendRequests(page: number = 1) {
     const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/all?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(
+      `${this.apiUrl}/${userId}/requests/all?page=${currentPage}&${this.pageParam}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
+    );
   }
 
   getFriendRequests(page: number = 1) {
     const currentPage = page - 1;
     const userId = this.authService.getId();
-    return this.http.get<PageResponse<UserModel>>(`${this.apiUrl}/${userId}/requests/received?page=${currentPage}&${this.pageParam}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<PageResponse<UserModel>>(
+      `${this.apiUrl}/${userId}/requests/received?page=${currentPage}&${this.pageParam}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
+    );
   }
 
   pushFriend(friend: UserModel) {
@@ -50,22 +62,33 @@ export class FriendshipService {
       receiverId: addedFriend.id!,
       status: null,
       createdAt: null,
-      updatedAt: null
+      updatedAt: null,
     };
-    this.http.post<UserModel>(this.apiUrl + "/addFriend", friendship, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }).subscribe({
-      next: (friend) => {
-        this.friends.push(friend);
-      },
-      error: (error) => {
-        console.error('Error adding friend:', error);
-      }
-    });
+    this.http
+      .post<UserModel>(this.apiUrl + '/addFriend', friendship, {
+        headers: { Authorization: `Bearer ${this.authService.getToken()}` },
+      })
+      .subscribe({
+        next: (friend) => {
+          this.friends.push(friend);
+        },
+        error: (error) => {
+          console.error('Error adding friend:', error);
+        },
+      });
   }
   removeRequest(friendship: FriendshipModel) {
-    return this.http.delete(`${this.apiUrl}/deleteFriendship`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
+    return this.http.delete(`${this.apiUrl}/deleteFriendship`, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` },
+      body: friendship,
+    });
   }
   acceptRequest(friendship: FriendshipModel) {
-    return this.http.post<FriendshipModel>(`${this.apiUrl}/acceptFriend`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
+    return this.http.post<FriendshipModel>(
+      `${this.apiUrl}/acceptFriend`,
+      friendship,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
+    );
   }
 
   createConversation(uid: number) {
@@ -79,14 +102,20 @@ export class FriendshipService {
       groupId: null,
       isBlocked: { currentId: false },
       lastModifiedBy: null,
-      name: null
-    }
-    return this.http.post(this.convUrl, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: conversation })
+      name: null,
+    };
+    return this.http.post(this.convUrl, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` },
+      body: conversation,
+    });
   }
 
   getConverstaion(uids: number[], type: ConversationType) {
     const currentId = this.authService.getId();
     uids.push(currentId!);
-    return this.http.get<ConversationDTO>(`${this.convUrl}?participant_ids=${uids}&conversation_type=${type}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<ConversationDTO>(
+      `${this.convUrl}?participant_ids=${uids}&conversation_type=${type}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
+    );
   }
 }

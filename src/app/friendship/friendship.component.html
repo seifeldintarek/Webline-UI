@@ -1,25 +1,35 @@
 <div class="main-container">
-    <!-- Friends list -->
-    <div class="friends-container">
-        <div class="friends">
-            <div class="result-item" *ngFor="let friend of friends">
-                <img [src]="friend.image" alt="profile" class="avatar" />
-                <div class="friend-info">
-                    <div class="fullName">{{ friend.fullName }}</div>
-                    <div class="email">{{ friend.email }}</div>
-                </div>
-
-                <p-button label="Remove" severity="danger" [rounded]="true" styleClass="my-btn"
-                    (click)="removeFriend(friend.id!)">
-                </p-button>
-                <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openChat(friend)">
-                </p-button>
-            </div>
+  <!-- Friends list -->
+  <div class="friends-container">
+    <div class="friends">
+      <div class="result-item" *ngFor="let friend of friends">
+        <img [src]="friend.image" alt="profile" class="avatar" />
+        <div class="friend-info">
+          <div class="fullName">{{ friend.fullName }}</div>
+          <div class="email">{{ friend.email }}</div>
         </div>
-    </div>
 
-    <!-- Chat panel (only shown when chat is opened) -->
-    <div class="chat-panel" *ngIf="selectedFriend">
-        <app-chat [UserModel]="selectedFriend" (close)="closeChat()"></app-chat>
+        <p-button
+          label="Remove"
+          severity="danger"
+          [rounded]="true"
+          styleClass="my-btn"
+          (click)="removeFriend(friend.id!)"
+        >
+        </p-button>
+        <p-button
+          icon="pi pi-comment"
+          [rounded]="true"
+          severity="info"
+          (click)="openChat(friend)"
+        >
+        </p-button>
+      </div>
     </div>
+  </div>
+
+  <!-- Chat panel (only shown when chat is opened) -->
+  <div class="chat-panel" *ngIf="selectedFriend">
+    <app-chat [chatUser]="selectedFriend" (close)="closeChat()"></app-chat>
+  </div>
 </div>
