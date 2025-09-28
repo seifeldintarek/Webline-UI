@@ -43,10 +43,10 @@ export class SearchComponent implements OnInit {
     return this.searchService.searchUsers(this.query, page)?.subscribe(
       {
         next: (data: PageResponse<UserModel>) => {
-          this.users = data.content;
+          this.users = data.content.filter(u => u.id !== this.authService.getId()!);
         },
         error: (error: any) => {
-          console.error('There was an error in getting data', error);
+          alert('There was an error in getting users ');
         }
       }
     );
