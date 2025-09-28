@@ -36,7 +36,6 @@ export class SignupComponent implements OnInit {
 
   onSubmit(): void {
     if (this.signupForm.valid) {
-      console.log('Form valid', this.signupForm.value);
       const newUser: UserModel = {
         id: null,
         firstName: this.signupForm.value.firstName,
@@ -56,7 +55,18 @@ export class SignupComponent implements OnInit {
       });
     }
     else {
-      console.warn('Form is invalid', this.signupForm.errors);
+      const errors: string[] = [];
+
+      Object.keys(this.signupForm.controls).forEach(key => {
+        const controlErrors = this.signupForm.get(key)?.errors;
+        if (controlErrors) {
+          Object.keys(controlErrors).forEach(errorKey => {
+            errors.push(`${key} has error: ${errorKey}`);
+          });
+        }
+      });
+
+      alert('Invalid input:\n' + errors.join('\n'));
     }
   }
 }
