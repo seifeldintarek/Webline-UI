@@ -65,7 +65,7 @@ export class FriendshipService {
     return this.http.delete(`${this.apiUrl}/deleteFriendship`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
   }
   acceptRequest(friendship: FriendshipModel) {
-    return this.http.post<FriendshipModel>(`${this.apiUrl}/acceptFriend`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: friendship })
+    return this.http.post<FriendshipModel>(`${this.apiUrl}/acceptFriend`, friendship, { headers: { Authorization: `Bearer ${this.authService.getToken()!}` } })
   }
 
   createConversation(uid: number) {
@@ -81,7 +81,7 @@ export class FriendshipService {
       lastModifiedBy: null,
       name: null
     }
-    return this.http.post(this.convUrl, { headers: { Authorization: `Bearer ${this.authService.getToken()}` }, body: conversation })
+    return this.http.post(this.convUrl, conversation, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } })
   }
 
   getConverstaion(uids: number[], type: ConversationType) {

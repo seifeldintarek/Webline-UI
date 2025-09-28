@@ -53,31 +53,41 @@ export class RequestsComponent implements OnInit {
     }
   }
 
-  toggleFriend(id: number) {
-    this.accepted = !this.accepted;
-    if (this.accepted) {
-      this.acceptFriend(id);
+  acceptedFriends = new Set<number>();
+
+  toggleFriend(friend: UserModel) {
+    if (this.acceptedFriends.has(friend.id!)) {
+      this.acceptedFriends.delete(friend.id!);
+      this.removeFriend(friend.id!);
     } else {
-      this.removeFriend(id);
+      this.acceptedFriends.add(friend.id!);
+      this.acceptFriend(friend);
     }
   }
 
-  acceptFriend(uid: number) {
+  acceptFriend(friend: UserModel) {
     const currentuser = this.authService.getId();
     let friendship: FriendshipModel = {
-      senderId: uid,
+      senderId: friend.id,
       receiverId: currentuser!,
       createdAt: null,
       id: null,
       status: null,
       updatedAt: null
     }
+
     this.friendshipService.acceptRequest(friendship).subscribe({
       next: (response: FriendshipModel) => {
-        friendship = response;
+        this.friendshipService.pushFriend(friend);
+        this.friendshipService.createConversation(friend.id!).subscribe({
+          next: () => { },
+          error: (err) => {
+
+          }
+        });
       },
       error: (err: any) => {
-        console.log("error: " + err);
+        alert("error: " + err);
       }
     })
   }
@@ -96,7 +106,7 @@ export class RequestsComponent implements OnInit {
       next: () => {
         this.friendRequests = this.friendRequests.filter(req => req.id !== uid);
       },
-      error: (err) => console.error('Error removing friend request:', err)
+      error: (err) => alert('Error removing friend request: ' + err)
     });
   }
 

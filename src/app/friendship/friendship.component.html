@@ -20,6 +20,6 @@
 
     <!-- Chat panel (only shown when chat is opened) -->
     <div class="chat-panel" *ngIf="selectedFriend">
-        <app-chat [UserModel]="selectedFriend" (close)="closeChat()"></app-chat>
+        <app-chat [chatUser]="selectedFriend" (close)="closeChat()"></app-chat>
     </div>
 </div>
