@@ -1,13 +1,26 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>XchatApp</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Add this script INSIDE <head>, before closing </head> -->
+  <script>
+    window.global = window;
+    window.process = {
+      env: { DEBUG: undefined },
+      version: '',
+      nextTick: function (fn) { setTimeout(fn, 0); }
+    };
+  </script>
 </head>
+
 <body>
   <app-root></app-root>
 </body>
+
 </html>

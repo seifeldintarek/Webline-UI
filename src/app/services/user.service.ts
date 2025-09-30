@@ -22,4 +22,8 @@ export class UserService {
     const userId = this.authService.getId();
     return this.http.patch<UserModel>(`/api/users/user/${userId}`, newUser, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
   }
+
+  getUserById(userId: number) {
+    return this.http.get<UserModel>(`/api/users/user/${userId}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+  }
 }

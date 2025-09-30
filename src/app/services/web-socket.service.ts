@@ -1,74 +1,114 @@
 import { Injectable } from '@angular/core';
+import { Client, Message as StompMessage } from '@stomp/stompjs';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Message } from '../models/message';
 import { AuthService } from './auth.service';
-import { ConversationDTO } from '../models/conversation-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
-  private socket!: WebSocket;
-  private messageSubject = new Subject<any>();
+  private stompClient!: Client;
+  private messageSubject = new Subject<Message>();
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
+  private subscriptions = new Map<string, any>();
 
   constructor(private authService: AuthService) {
     this.connect();
   }
 
   connect(): void {
-    this.socket = new WebSocket('ws://localhost:3000/api-ws/ws');
+    this.stompClient = new Client({
+      brokerURL: 'ws://localhost:3000/api-ws/ws',
+      reconnectDelay: 500,
+      heartbeatIncoming: 10000, // expect server heartbeat every 10s
+      heartbeatOutgoing: 10000,
+      connectHeaders: {
+        Authorization: `Bearer ${this.authService.getToken()}`
+      },
+      debug: (str) => console.log(str),
+    });
 
-    this.socket.onopen = () => {
-      console.log('WebSocket connection opened');
+    this.stompClient.onConnect = () => {
+      console.log('STOMP connected');
       this.connectionStatusSubject.next(true);
     };
 
-    this.socket.onmessage = (event) => {
-      alert('Received message: ' + event.data);
-      try {
-        const parsedMessage = JSON.parse(event.data);
-        this.messageSubject.next(parsedMessage);
-      } catch (e) {
-        // If it's not JSON, treat as plain text
-        this.messageSubject.next({
-          content: event.data,
-          type: 'text',
-          sent: false,
-          senderId: 'DJ',
-          timestamp: new Date()
-        });
-      }
-    };
-
-    this.socket.onclose = () => {
-      console.log('WebSocket connection closed');
-      this.connectionStatusSubject.next(false);
-      // Attempt to reconnect after 3 seconds
-      setTimeout(() => this.connect(), 3000);
-    };
-
-    this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+    this.stompClient.onStompError = (frame) => {
+      console.error('Broker error:', frame.headers['message'], frame.body);
       this.connectionStatusSubject.next(false);
     };
+
+    this.stompClient.onDisconnect = () => {
+      console.log('STOMP disconnected');
+      this.connectionStatusSubject.next(false);
+    };
+
+    this.stompClient.activate();
   }
 
-  sendMessage(message: string, conversation: ConversationDTO): void {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+  sendMessage(message: string, conversationId: string): void {
+    if (this.stompClient.connected) {
       const messageObj: Message = {
         content: message,
         senderId: this.authService.getId()!,
-        conversationId: conversation.id!,
-        contentType: 'text'
+        conversationId: conversationId,
+        contentType: 'text',
+        timestamp: new Date(),
+        id: '',
+        readBy: [],
+        receivedBy: [],
       };
-      this.socket.send(JSON.stringify(messageObj));
+      console.log('Sending message:', messageObj);
+      this.stompClient.publish({
+        destination: `/app/chat.sendMessage/${conversationId}`,
+        body: JSON.stringify(messageObj),
+      });
     } else {
-      console.warn('WebSocket is not open');
+      console.warn('STOMP is not connected');
     }
   }
 
-  onMessage(): Observable<any> {
+  // Subscribe to real-time messages for a conversation
+  subscribeToConversation(conversationId: string): void {
+    if (!conversationId) {
+      console.warn('Cannot subscribe: conversationId is null or undefined');
+      return;
+    }
+
+    // Avoid duplicate subscriptions
+    if (this.subscriptions.has(conversationId)) {
+      console.log(`Already subscribed to conversation: ${conversationId}`);
+      return;
+    }
+
+    if (this.stompClient.connected) {
+      const subscription = this.stompClient.subscribe(
+        `/conversation/${conversationId}`,
+        (msg: StompMessage) => {
+          const data = JSON.parse(msg.body);
+          console.log('Received real-time message:', data);
+          this.messageSubject.next(data);
+        }
+      );
+      this.subscriptions.set(conversationId, subscription);
+      console.log(`Subscribed to conversation: ${conversationId}`);
+    } else {
+      console.warn('STOMP is not connected, cannot subscribe');
+    }
+  }
+
+  // Unsubscribe from a conversation
+  unsubscribeFromConversation(conversationId: string): void {
+    const subscription = this.subscriptions.get(conversationId);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.subscriptions.delete(conversationId);
+      console.log(`Unsubscribed from conversation: ${conversationId}`);
+    }
+  }
+
+  onMessage(): Observable<Message> {
     return this.messageSubject.asObservable();
   }
 
@@ -77,8 +117,12 @@ export class WebSocketService {
   }
 
   disconnect(): void {
-    if (this.socket) {
-      this.socket.close();
+    if (this.stompClient) {
+      // Unsubscribe from all conversations
+      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+      this.subscriptions.clear();
+
+      this.stompClient.deactivate();
     }
   }
 }

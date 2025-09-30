@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(email, password).subscribe({
       next: (res) => {
         this.authService.assignToken(res.access_token);
-        this.router.navigate(['home']).catch(err => console.error('Navigation failed', err));
+        this.router.navigate(['home/friends']).catch(err => console.error('Navigation failed', err));
       },
       error: () => {
         console.error('Login failed');

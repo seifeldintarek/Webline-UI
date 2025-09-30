@@ -71,9 +71,9 @@ export class SearchComponent implements OnInit {
   }
 
   addFriend(user: UserModel) {
-    const isPending = this.friendRequests.some(req => req.id === user.id);
+    const pending = this.isPending(user);
 
-    if (isPending) {
+    if (pending) {
       const friendship: FriendshipModel = {
         id: null,
         senderId: user.id!,
@@ -90,11 +90,9 @@ export class SearchComponent implements OnInit {
         error: (err) => console.error('Error removing friend request:', err)
       });
 
-    } else {
-      this.friendRequests.push(user);
+    } else if (!this.isFriend(user)) {
       this.friendshipService.addFriend(user);
+      this.friendRequests.push(user);
     }
   }
-
-
 }

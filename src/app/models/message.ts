@@ -1,6 +1,10 @@
 export interface Message {
-    senderId: number,
-    content: string,
-    conversationId: string,
-    contentType: string
+    id?: string;
+    content: string;
+    senderId: number;
+    conversationId: string;
+    contentType: string;
+    timestamp: Date | string;
+    readBy?: number[];
+    receivedBy?: number[];
 }

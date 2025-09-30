@@ -1,20 +1,13 @@
 <div class="container">
     <div class="sidebar">
-        <button (click)="selectView('search')" class="icon-btn">🔍</button>
-        <button (click)="selectView('chat')">Chat</button>
-        <button (click)="selectView('friends')">Friends</button>
-        <button (click)="selectView('requests')">Requests</button>
-        <button (click)="selectView('update')">Account</button>
+        <button routerLink="/home/search" routerLinkActive="active" class="icon-btn">🔍</button>
+        <!-- <button routerLink="/home/chat" routerLinkActive="active">Chat</button> -->
+        <button routerLink="/home/friends" routerLinkActive="active">Friends</button>
+        <button routerLink="/home/requests" routerLinkActive="active">Requests</button>
+        <button routerLink="/home/update-profile" routerLinkActive="active">Account</button>
         <button (click)="logout()">Logout</button>
     </div>
-
     <div class="content">
-        <ng-container [ngSwitch]="selectedView">
-            <app-search *ngSwitchCase="'search'"></app-search>
-            <app-chat *ngSwitchCase="'chat'"></app-chat>
-            <app-updateprofile *ngSwitchCase="'update'"></app-updateprofile>
-            <app-friendship *ngSwitchCase="'friends'"></app-friendship>
-            <app-requests *ngSwitchCase="'requests'"></app-requests>
-        </ng-container>
+        <router-outlet></router-outlet>
     </div>
 </div>
