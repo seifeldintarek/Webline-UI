@@ -1,0 +1,84 @@
+.friends-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* full viewport height */
+    padding: 10px;
+    /* normal padding */
+    box-sizing: border-box;
+}
+
+.friends {
+    flex: 1;
+    /* take remaining space */
+    overflow-y: auto;
+    /* scroll if content is too tall */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.my-btn {
+    background-color: green;
+    /* background */
+    color: white;
+    /* text color */
+    border-radius: 8px;
+    /* rounded corners */
+    height: 30px;
+    /* button height */
+    font-size: 12px;
+    /* text size */
+    padding: 0 10px;
+    /* horizontal padding */
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.friend-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.email {
+    font-size: 14px;
+    color: #777;
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    button {
+        padding: 6px 12px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    }
+}

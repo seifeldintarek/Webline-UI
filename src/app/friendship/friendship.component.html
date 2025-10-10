@@ -1,0 +1,32 @@
+<div class="main-container">
+    <!-- Friends list -->
+    <div class="friends-container">
+        <div class="friends">
+            <div class="result-item" *ngFor="let friend of friends">
+                <img [src]="friend.image" alt="profile" class="avatar" />
+                <div class="friend-info">
+                    <div class="fullName">{{ friend.fullName }}</div>
+                    <div class="email">{{ friend.email }}</div>
+                </div>
+                <p-button label="Remove" severity="danger" [rounded]="true" styleClass="my-btn"
+                    (click)="removeFriend(friend.id!)">
+                </p-button>
+                <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openChat(friend)">
+                </p-button>
+            </div>
+        </div>
+        <!-- Pagination controls -->
+        <div class="pagination-controls">
+            <p-button label="Previous" icon="pi pi-chevron-left" [disabled]="page === 1" (click)="prevPage()">
+            </p-button>
+            <span class="page-number">Page {{ page }}</span>
+            <p-button label="Next" icon="pi pi-chevron-right" (click)="nextPage()">
+            </p-button>
+        </div>
+    </div>
+
+    <!-- Chat panel (router outlet replaces app-chat) -->
+    <div class="chat-panel">
+        <router-outlet></router-outlet>
+    </div>
+</div>

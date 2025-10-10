@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="sidebar">
+        <button routerLink="/home/search" routerLinkActive="active" class="icon-btn">🔍</button>
+        <!-- <button routerLink="/home/chat" routerLinkActive="active">Chat</button> -->
+        <button routerLink="/home/friends" routerLinkActive="active">Friends</button>
+        <button routerLink="/home/requests" routerLinkActive="active">Requests</button>
+        <button routerLink="/home/update-profile" routerLinkActive="active">Account</button>
+        <button (click)="logout()">Logout</button>
+    </div>
+    <div class="content">
+        <router-outlet></router-outlet>
+    </div>
+</div>

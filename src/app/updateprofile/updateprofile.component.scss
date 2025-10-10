@@ -1,0 +1,72 @@
+/* Container: full height, horizontally centered content */
+.update-profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* full viewport height */
+    width: 100%;
+    /* full width of parent */
+    max-width: 500px;
+    /* limit the container width */
+    margin: 0 auto;
+    /* center horizontally */
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: #fff;
+
+    overflow-y: auto;
+    /* scroll if needed */
+}
+
+/* Form styling */
+.update-profile-container form {
+    width: 100%;
+    max-width: 400px;
+    /* limit form width */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    /* center title & button */
+}
+
+/* Title styling */
+.update-profile-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Form group styling */
+.update-profile-container .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    text-align: left;
+    /* labels left-aligned */
+}
+
+/* Input fields styling */
+.update-profile-container input.form-control {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+/* Update button styling */
+.update-profile-container button.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: center;
+    /* center horizontally */
+}
