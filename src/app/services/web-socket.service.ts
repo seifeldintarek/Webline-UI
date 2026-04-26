@@ -26,7 +26,7 @@ export class WebSocketService {
       connectHeaders: {
         Authorization: `Bearer ${this.authService.getToken()}`
       },
-      debug: (str) => console.log(str),
+      debug: (str: string) => console.log(str),
     });
 
     this.stompClient.onConnect = () => {
@@ -34,7 +34,7 @@ export class WebSocketService {
       this.connectionStatusSubject.next(true);
     };
 
-    this.stompClient.onStompError = (frame) => {
+    this.stompClient.onStompError = (frame: any) => {
       console.error('Broker error:', frame.headers['message'], frame.body);
       this.connectionStatusSubject.next(false);
     };
