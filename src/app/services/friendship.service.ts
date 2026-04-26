@@ -13,8 +13,8 @@ import {
   providedIn: 'root',
 })
 export class FriendshipService {
-  private apiUrl = 'http://localhost:3000/api/users';
-  private convUrl = 'http://localhost:3000/api/messages/conversation';
+  private apiUrl = 'http://localhost:5500/api/users';
+  private convUrl = 'http://localhost:5500/api/messages/conversation';
   private pageParam = '&size=10&sort=id,asc';
   private friends: UserModel[] = [];
 

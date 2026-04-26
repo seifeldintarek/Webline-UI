@@ -14,7 +14,7 @@ export class SearchService {
     private authService: AuthService
   ) { }
 
-  private readonly searchUrl = "http://localhost:3000/api/users/user/search?page=";
+  private readonly searchUrl = "http://localhost:5500/api/users/user/search?page=";
 
   private pageSize = "&size=10";
   private sortBy = "&sort=id,asc";

@@ -7,7 +7,7 @@ import { UserModel } from '../models/user-model';
 })
 export class AuthService {
 
-  private authUrl = "http://localhost:3000/api/users/auth/";
+  private authUrl = "http://localhost:5500/api/users/auth/";
 
   constructor(private http: HttpClient) { }
 
@@ -47,7 +47,7 @@ export class AuthService {
 
 
   private decodeToken(token: string) {
-    const url = "http://localhost:3000/api/users/user/info";
+    const url = "http://localhost:5500/api/users/user/info";
     this.http.get<UserModel>(url, { headers: { Authorization: `Bearer ${token}` } }).subscribe({
       next: (user) => {
         this.currentUser = user;

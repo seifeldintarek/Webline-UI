@@ -13,12 +13,12 @@ export class MessageService {
   ) { }
 
   getMessages(conversationId: string) {
-    return this.http.get<Message[]>('http://localhost:3000/api/messages/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    return this.http.get<Message[]>('http://localhost:5500/api/messages/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     );
   }
 
   deleteConversation(conversationId: string) {
-    this.http.delete('http://localhost:3000/api/messages/conversation/' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    this.http.delete('http://localhost:5500/api/messages/conversation/' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     ).subscribe({
       next: () => {
         this.deleteConversation(conversationId);
@@ -30,7 +30,7 @@ export class MessageService {
   }
 
   deleteMessages(conversationId: string) {
-    this.http.delete('http://localhost:3000/api/messages/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    this.http.delete('http://localhost:5500/api/messages/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     ).subscribe({
       next: () => {
         console.log('Messages deleted successfully');
