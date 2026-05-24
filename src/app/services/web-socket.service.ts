@@ -19,7 +19,7 @@ export class WebSocketService {
 
   connect(): void {
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:5500/api-ws/ws',
+      brokerURL: 'ws://localhost:5600/api-ws/ws',
       reconnectDelay: 500,
       heartbeatIncoming: 10000, // expect server heartbeat every 10s
       heartbeatOutgoing: 10000,
