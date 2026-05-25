@@ -1,0 +1,76 @@
+<div class="main-container">
+  <!-- Groups list -->
+  <div class="groups-container">
+
+    <!-- Create Group Button -->
+    <div class="create-group-bar">
+      <p-button label="Create Group" icon="pi pi-plus" severity="success" [rounded]="true"
+        (click)="showCreateModal = true">
+      </p-button>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div class="modal-overlay" *ngIf="showCreateModal" (click)="onOverlayClick($event)">
+      <div class="modal-card">
+        <h3>Create Group</h3>
+
+        <div class="form-group">
+          <label>Group Name</label>
+          <input type="text" class="form-control" [(ngModel)]="newGroupName" placeholder="Enter group name" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" class="form-control" [(ngModel)]="newGroupDescription"
+            placeholder="Optional description" />
+        </div>
+
+        <div class="modal-actions">
+          <p-button label="Cancel" severity="secondary" [rounded]="true" (click)="showCreateModal = false"></p-button>
+          <p-button label="Create" severity="success" [rounded]="true" [disabled]="!newGroupName.trim()"
+            (click)="createGroup()"></p-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="groups">
+      <div class="result-item" *ngFor="let group of groups">
+        <!-- Group avatar: image if available, otherwise initials -->
+        <div class="avatar" *ngIf="!group.image">
+          {{ group.name?.charAt(0)?.toUpperCase() }}
+        </div>
+        <img *ngIf="group.image" [src]="group.image" alt="group" class="avatar avatar-img" />
+
+        <div class="group-info">
+          <div class="fullName">{{ group.name }}</div>
+          <div class="description">{{ group.description || 'No description' }}</div>
+        </div>
+
+        <p-button label="Leave" severity="danger" [rounded]="true" styleClass="my-btn" (click)="leaveGroup(group.id)">
+        </p-button>
+
+        <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openGroupChat(group)">
+        </p-button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="groups.length === 0" class="empty-state">
+        <p>You are not in any groups yet.</p>
+      </div>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination-controls">
+      <p-button label="Previous" icon="pi pi-chevron-left" [disabled]="page === 1" (click)="prevPage()">
+      </p-button>
+      <span class="page-number">Page {{ page }}</span>
+      <p-button label="Next" icon="pi pi-chevron-right" [disabled]="groups.length < 10" (click)="nextPage()">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Group chat panel (router outlet) -->
+  <div class="chat-panel">
+    <router-outlet></router-outlet>
+  </div>
+</div>
