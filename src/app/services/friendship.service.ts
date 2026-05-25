@@ -14,7 +14,7 @@ import {
 })
 export class FriendshipService {
   private apiUrl = 'http://localhost:5500/api/users';
-  private convUrl = 'http://localhost:5500/api/messages/conversation';
+  private convUrl = 'http://localhost:5600/api/conversation';
   private pageParam = '&size=10&sort=id,asc';
   private friends: UserModel[] = [];
 
@@ -106,17 +106,16 @@ export class FriendshipService {
       lastModifiedBy: null,
       name: null,
     };
-    return this.http.post(this.convUrl, {
+    return this.http.post<ConversationDTO>(this.convUrl, conversation, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` },
-      body: conversation,
     });
   }
 
   getConverstaion(uids: number[], type: ConversationType) {
     const currentId = this.authService.getId();
-    uids.push(currentId!);
+    const allIds = [...uids, currentId!];
     return this.http.get<ConversationDTO>(
-      `${this.convUrl}?participant_ids=${uids}&conversation_type=${type}`,
+      `${this.convUrl}?participant_ids=${allIds}&conversation_type=${type}`,
       { headers: { Authorization: `Bearer ${this.authService.getToken()}` } },
     );
   }

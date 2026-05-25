@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserModel } from '../models/user-model';
+import { catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,25 @@ export class AuthService {
       },
       error: (error) => console.log('Error fetching user info:', error)
     });
+  }
+
+  validateToken(): Observable<boolean> {
+    const token = this.getToken();
+    if (!token) return of(false);
+
+    return this.http.get<UserModel>(
+      'http://localhost:5500/api/users/user/info',
+      { headers: { Authorization: `Bearer ${token}` } }
+    ).pipe(
+      map(user => {
+        this.currentUser = user;
+        return true;
+      }),
+      catchError(() => {
+        this.logout();
+        return of(false);
+      })
+    );
   }
 
   loadTokenFromStorage() {

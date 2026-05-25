@@ -49,7 +49,10 @@ export class FriendshipComponent implements OnInit {
       console.error('Friend ID is missing!', friend);
       return;
     }
-    this.router.navigate(['chat', friend.id], { relativeTo: this.route });
+    this.router.navigate(['chat', friend.id], {
+      relativeTo: this.route,
+      state: { user: friend }
+    });
   }
   removeFriend(uid: number) {
     const currentuser = this.authService.getId();

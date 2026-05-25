@@ -1,1 +1,5 @@
-<router-outlet></router-outlet>
+<div *ngIf="isLoading" class="loading-screen">
+  <!-- spinner or blank screen -->
+</div>
+
+<router-outlet *ngIf="!isLoading"></router-outlet>
