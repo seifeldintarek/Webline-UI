@@ -3,6 +3,7 @@ import { Client, Message as StompMessage } from '@stomp/stompjs';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Message } from '../models/message';
 import { AuthService } from './auth.service';
+import SockJS from 'sockjs-client';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +20,10 @@ export class WebSocketService {
 
   connect(): void {
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:5600/api-ws/ws',
+      webSocketFactory: () => new SockJS('http://localhost:5600/api/ws'),
       reconnectDelay: 500,
-      heartbeatIncoming: 10000, // expect server heartbeat every 10s
+      heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      connectHeaders: {
-        Authorization: `Bearer ${this.authService.getToken()}`
-      },
       debug: (str: string) => console.log(str),
     });
 
@@ -47,6 +45,7 @@ export class WebSocketService {
     this.stompClient.activate();
   }
 
+
   sendMessage(message: string, conversationId: string): void {
     if (this.stompClient.connected) {
       const messageObj: Message = {
@@ -55,7 +54,7 @@ export class WebSocketService {
         conversationId: conversationId,
         contentType: 'text',
         timestamp: new Date(),
-        id: '',
+        id: this.authService.getId()!.toString(),
         readBy: [],
         receivedBy: [],
       };
@@ -126,3 +125,4 @@ export class WebSocketService {
     }
   }
 }
+

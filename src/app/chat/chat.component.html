@@ -1,58 +1,58 @@
 <div class="chat-container">
-    <!-- Header -->
-    <div class="chat-header">
-        <div class="header-left">
-            <div class="avatar">{{ initials || ' ' }}</div>
-            <div class="user-info">
-                <h3>{{ chatUser.fullName || ' ' }}</h3>
-                <div class="online-status">
-                    <div class="online-dot" [class.online]="isConnected"></div>
-                    <span class="status-text">{{ isConnected ? 'Online' : 'Offline' }}</span>
-                </div>
-            </div>
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="header-left">
+      <div class="avatar">{{ initials || ' ' }}</div>
+      <div class="user-info">
+        <h3>{{ chatUser?.fullName || ' ' }}</h3>
+        <div class="online-status">
+          <div class="online-dot" [class.online]="isConnected"></div>
+          <span class="status-text">{{ isConnected ? 'Online' : 'Offline' }}</span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection Status -->
+  <div *ngIf="!isConnected" class="connection-status">
+    <div class="connection-warning">
+      <svg viewBox="0 0 24 24" class="warning-icon" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>Connecting to server...</span>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages-container" #messagesContainer>
+    <div *ngIf="messages.length === 0" style="text-align: center; padding: 20px; color: #999;">
+      No messages yet. Start the conversation!
     </div>
 
-    <!-- Connection Status -->
-    <div *ngIf="!isConnected" class="connection-status">
-        <div class="connection-warning">
-            <svg viewBox="0 0 24 24" class="warning-icon" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <span>Connecting to server...</span>
-        </div>
+    <div *ngFor="let msg of messages; trackBy: trackByIndex"
+      [ngClass]="{'message': true, 'sent': msg.senderId === currentId, 'received': msg.senderId !== currentId}">
+      <div class="message-bubble">
+        <span>{{ msg.content }}</span>
+        <div class="message-time">{{ msg.timestamp | date:'shortTime' }}</div>
+      </div>
     </div>
+  </div>
 
-    <!-- Messages -->
-    <div class="messages-container" #messagesContainer>
-        <div *ngIf="messages.length === 0" style="text-align: center; padding: 20px; color: #999;">
-            No messages yet. Start the conversation!
-        </div>
-
-        <div *ngFor="let msg of messages; trackBy: trackByIndex"
-            [ngClass]="{'message': true, 'sent': msg.senderId === currentId, 'received': msg.senderId !== currentId}">
-            <div class="message-bubble">
-                <span>{{ msg.content }}</span>
-                <div class="message-time">{{ msg.timestamp | date:'shortTime' }}</div>
-            </div>
-        </div>
+  <!-- Typing Indicator -->
+  <div *ngIf="typing" class="typing-indicator received">
+    <div class="typing-bubble">
+      <span>Typing...</span>
     </div>
+  </div>
 
-    <!-- Typing Indicator -->
-    <div *ngIf="typing" class="typing-indicator received">
-        <div class="typing-bubble">
-            <span>Typing...</span>
-        </div>
-    </div>
-
-    <!-- Input Area -->
-    <div class="chat-input">
-        <input type="text" class="message-input" placeholder="Write something..." [(ngModel)]="newMessage"
-            (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
-        <button class="send-button" (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">
-            Send
-        </button>
-    </div>
+  <!-- Input Area -->
+  <div class="chat-input">
+    <input type="text" class="message-input" placeholder="Write something..." [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
+    <button class="send-button" (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">
+      Send
+    </button>
+  </div>
 </div>
