@@ -1,5 +1,4 @@
 <div class="main-container">
-  <!-- Groups list -->
   <div class="groups-container">
 
     <!-- Create Group Button -->
@@ -9,13 +8,13 @@
       </p-button>
     </div>
 
-    <!-- Create Group Modal -->
-    <div class="modal-overlay" *ngIf="showCreateModal" (click)="onOverlayClick($event)">
+    <!-- ── Create Group Modal ─────────────────────────────────────────────── -->
+    <div class="modal-overlay" *ngIf="showCreateModal" (click)="onCreateOverlayClick($event)">
       <div class="modal-card">
         <h3>Create Group</h3>
 
         <div class="form-group">
-          <label>Group Name</label>
+          <label>Group Name *</label>
           <input type="text" class="form-control" [(ngModel)]="newGroupName" placeholder="Enter group name" />
         </div>
 
@@ -25,17 +24,65 @@
             placeholder="Optional description" />
         </div>
 
+        <small *ngIf="createError" class="error-msg">{{ createError }}</small>
+
         <div class="modal-actions">
-          <p-button label="Cancel" severity="secondary" [rounded]="true" (click)="showCreateModal = false"></p-button>
+          <p-button label="Cancel" severity="secondary" [rounded]="true" (click)="closeCreateModal()"></p-button>
           <p-button label="Create" severity="success" [rounded]="true" [disabled]="!newGroupName.trim()"
             (click)="createGroup()"></p-button>
         </div>
       </div>
     </div>
 
+    <!-- ── Add Members Modal ──────────────────────────────────────────────── -->
+    <div class="modal-overlay" *ngIf="showAddMembersModal" (click)="onAddMembersOverlayClick($event)">
+      <div class="modal-card modal-card--wide">
+        <h3>Add Members to "{{ selectedGroup?.name }}"</h3>
+
+        <div class="members-list">
+          <div *ngFor="let friend of friends" class="member-item">
+            <!-- Avatar -->
+            <div class="avatar" *ngIf="!friend.image">
+              {{ friend.firstName?.charAt(0)?.toUpperCase() }}
+            </div>
+            <img *ngIf="friend.image" [src]="friend.image" alt="avatar" class="avatar avatar-img" />
+
+            <div class="member-info">
+              <div class="fullName">{{ friend.fullName }}</div>
+              <div class="email">{{ friend.email }}</div>
+            </div>
+
+            <p-button [label]="addedMemberIds.has(friend.id!) ? 'Remove' : 'Add'"
+              [severity]="addedMemberIds.has(friend.id!) ? 'danger' : 'success'" [rounded]="true" styleClass="my-btn"
+              (click)="toggleMember(friend)">
+            </p-button>
+          </div>
+
+          <div *ngIf="friends.length === 0" class="empty-state">
+            <p>No friends to add.</p>
+          </div>
+        </div>
+
+        <small *ngIf="addMemberError" class="error-msg">{{ addMemberError }}</small>
+
+        <!-- Friends pagination inside modal -->
+        <div class="modal-pagination">
+          <p-button icon="pi pi-chevron-left" [rounded]="true" severity="secondary" [disabled]="friendsPage === 1"
+            (click)="friendsPrevPage()"></p-button>
+          <span class="page-number">Page {{ friendsPage }}</span>
+          <p-button icon="pi pi-chevron-right" [rounded]="true" severity="secondary" [disabled]="friends.length < 10"
+            (click)="friendsNextPage()"></p-button>
+        </div>
+
+        <div class="modal-actions">
+          <p-button label="Done" severity="primary" [rounded]="true" (click)="closeAddMembersModal()"></p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Groups List ────────────────────────────────────────────────────── -->
     <div class="groups">
       <div class="result-item" *ngFor="let group of groups">
-        <!-- Group avatar: image if available, otherwise initials -->
         <div class="avatar" *ngIf="!group.image">
           {{ group.name?.charAt(0)?.toUpperCase() }}
         </div>
@@ -46,30 +93,34 @@
           <div class="description">{{ group.description || 'No description' }}</div>
         </div>
 
-        <p-button label="Leave" severity="danger" [rounded]="true" styleClass="my-btn" (click)="leaveGroup(group.id)">
+        <!-- Add members -->
+        <p-button icon="pi pi-user-plus" [rounded]="true" severity="secondary" pTooltip="Add members"
+          (click)="openAddMembers(group)">
         </p-button>
 
+        <!-- Open chat -->
         <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openGroupChat(group)">
+        </p-button>
+
+        <!-- Delete group -->
+        <p-button label="Delete" severity="danger" [rounded]="true" styleClass="my-btn" (click)="deleteGroup(group.id)">
         </p-button>
       </div>
 
-      <!-- Empty state -->
       <div *ngIf="groups.length === 0" class="empty-state">
         <p>You are not in any groups yet.</p>
       </div>
     </div>
 
-    <!-- Pagination controls -->
+    <!-- Pagination -->
     <div class="pagination-controls">
-      <p-button label="Previous" icon="pi pi-chevron-left" [disabled]="page === 1" (click)="prevPage()">
-      </p-button>
+      <p-button label="Previous" icon="pi pi-chevron-left" [disabled]="page === 1" (click)="prevPage()"></p-button>
       <span class="page-number">Page {{ page }}</span>
-      <p-button label="Next" icon="pi pi-chevron-right" [disabled]="groups.length < 10" (click)="nextPage()">
-      </p-button>
+      <p-button label="Next" icon="pi pi-chevron-right" [disabled]="groups.length < 10" (click)="nextPage()"></p-button>
     </div>
   </div>
 
-  <!-- Group chat panel (router outlet) -->
+  <!-- Chat panel -->
   <div class="chat-panel">
     <router-outlet></router-outlet>
   </div>
