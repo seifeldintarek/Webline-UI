@@ -5,6 +5,7 @@ import { GroupModel } from '../models/group-model';
 import { GroupMemberModel } from '../models/group-member-model';
 import { PageResponse } from '../models/page-response';
 import { UserModel } from '../models/user-model';
+import { ConversationDTO, ConversationType } from '../models/conversation-model';
 
 export interface GroupDTO {
   id?: number | null;
@@ -21,6 +22,8 @@ export class GroupService {
 
   private readonly baseUrl = 'http://localhost:5500/api/users/group';
   private readonly userBaseUrl = 'http://localhost:5500/api/users';
+  private convUrl = 'http://localhost:5600/api/conversation';
+
 
   constructor(
     private http: HttpClient,
@@ -29,6 +32,13 @@ export class GroupService {
 
   private get authHeader() {
     return { Authorization: `Bearer ${this.authService.getToken()}` };
+  }
+
+  getGroupConversation(memberIds: number[]) {
+    return this.http.get<ConversationDTO>(
+      `${this.convUrl}?participant_ids=${memberIds.join(',')}&conversation_type=${ConversationType.GROUP}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    );
   }
 
   // GET /group/{groupId}

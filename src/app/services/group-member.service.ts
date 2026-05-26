@@ -20,14 +20,7 @@ export class GroupMemberService {
     return { Authorization: `Bearer ${this.authService.getToken()}` };
   }
 
-  // GET /group/{groupId}/members
-  getMembers(groupId: number, page: number = 1) {
-    const pageIndex = page - 1;
-    return this.http.get<PageResponse<GroupMemberModel>>(
-      `${this.baseUrl}/${groupId}?page=${pageIndex}&size=10&sort=id,asc`,
-      { headers: this.authHeader }
-    );
-  }
+
 
   // GET /group/{groupId}/admin
   getAdmins(groupId: number, page: number = 1) {

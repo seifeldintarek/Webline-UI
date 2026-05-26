@@ -9,6 +9,7 @@ import { UpdateProfileComponent } from './updateprofile/updateprofile.component'
 import { AuthGuard } from './auth/auth/auth.guard';
 import { ChatComponent } from './chat/chat.component';
 import { GroupsComponent } from './groups/groups.component';
+import { GroupChatComponent } from './group-chat/group-chat.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,7 +19,12 @@ export const routes: Routes = [
     component: HomeComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'groups', component: GroupsComponent },
+      {
+        path: 'groups', component: GroupsComponent,
+        children: [
+          { path: 'chat/:groupId', component: GroupChatComponent }
+        ]
+      },
       { path: '', redirectTo: 'search', pathMatch: 'full' },
       { path: 'search', component: SearchComponent },
       {
