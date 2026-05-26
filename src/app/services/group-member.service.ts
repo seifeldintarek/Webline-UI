@@ -10,6 +10,8 @@ import { PageResponse } from '../models/page-response';
 export class GroupMemberService {
 
   private readonly baseUrl = 'http://localhost:5500/api/users/groupMember';
+  private readonly groupUrl = 'http://localhost:5500/api/users/group';
+
 
   constructor(
     private http: HttpClient,
@@ -72,7 +74,7 @@ export class GroupMemberService {
   // GET /group/{groupId}/isMember/{userId}
   isMember(groupId: number, userId: number) {
     return this.http.get<boolean>(
-      `${this.baseUrl}/${groupId}/isMember/${userId}`,
+      `${this.groupUrl}/${groupId}/isMember/${userId}`,
       { headers: this.authHeader }
     );
   }

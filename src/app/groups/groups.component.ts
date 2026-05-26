@@ -8,6 +8,7 @@ import { GroupMemberService } from '../services/group-member.service';
 import { FriendshipService } from '../services/friendship.service';
 import { GroupModel } from '../models/group-model';
 import { UserModel } from '../models/user-model';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-groups',
@@ -58,6 +59,10 @@ export class GroupsComponent implements OnInit {
 
   // ── Create ───────────────────────────────────────────────────────────────────
 
+  // add this property
+  groupConversationMap = new Map<number, string>();
+
+  // update createGroup()
   createGroup() {
     if (!this.newGroupName.trim()) return;
     this.createError = '';
@@ -65,18 +70,65 @@ export class GroupsComponent implements OnInit {
       this.newGroupName.trim(),
       this.newGroupDescription.trim() || null,
       this.newGroupImage.trim() || null
-    ).subscribe({
-      next: (group) => {
+    ).pipe(
+      switchMap(group => {
         this.groups.unshift(group);
+        return this.groupService.createGroupConversation(group, []);
+      })
+    ).subscribe({
+      next: (conv) => {
+        const group = this.groups[0];
+        this.groupConversationMap.set(group.id!, conv.id!);
         this.closeCreateModal();
       },
       error: (err) => {
-        console.error('Error creating group:', err);
+        console.error('Error creating group or conversation:', err);
         this.createError = 'Failed to create group. Please try again.';
       }
     });
   }
 
+  // update toggleMember()
+  toggleMember(friend: UserModel) {
+    if (!this.selectedGroup?.id || !friend.id) return;
+    const convId = this.groupConversationMap.get(this.selectedGroup.id);
+    if (!convId) {
+      this.addMemberError = 'Conversation not found.';
+      return;
+    }
+
+    if (this.addedMemberIds.has(friend.id)) {
+      this.groupMemberService.removeMember(this.selectedGroup.id, friend.id).pipe(
+        switchMap(() => this.groupService.getConversationById(convId)),
+        switchMap(conv => {
+          const updatedParticipants = conv.participants.filter(p => p !== friend.id);
+          return this.groupService.updateGroupConversation(convId, { ...conv, participants: updatedParticipants });
+        })
+      ).subscribe({
+        next: () => this.addedMemberIds.delete(friend.id!),
+        error: () => { this.addMemberError = 'Failed to remove member.'; }
+      });
+    } else {
+      this.groupMemberService.isMember(this.selectedGroup.id, friend.id).pipe(
+        switchMap(isMember => {
+          if (isMember) {
+            this.addedMemberIds.add(friend.id!);
+            return this.groupService.getConversationById(convId);
+          }
+          return this.groupMemberService.addMember(this.selectedGroup!.id!, friend.id!).pipe(
+            switchMap(() => this.groupService.getConversationById(convId))
+          );
+        }),
+        switchMap(conv => {
+          const updatedParticipants = Array.from(new Set([...conv.participants, friend.id!]));
+          return this.groupService.updateGroupConversation(convId, { ...conv, participants: updatedParticipants });
+        })
+      ).subscribe({
+        next: () => this.addedMemberIds.add(friend.id!),
+        error: () => { this.addMemberError = 'Failed to add member.'; }
+      });
+    }
+  }
   closeCreateModal() {
     this.showCreateModal = false;
     this.newGroupName = '';
@@ -91,6 +143,8 @@ export class GroupsComponent implements OnInit {
     }
   }
 
+
+
   // ── Add Members ──────────────────────────────────────────────────────────────
 
   openAddMembers(group: GroupModel) {
@@ -99,6 +153,15 @@ export class GroupsComponent implements OnInit {
     this.addMemberError = '';
     this.friendsPage = 1;
     this.loadFriends();
+
+    // fetch conversation if not already in map
+    if (!this.groupConversationMap.has(group.id!)) {
+      this.groupService.getGroupConversation(group.id!).subscribe({
+        next: (conv) => this.groupConversationMap.set(group.id!, conv.id!),
+        error: () => this.addMemberError = 'Conversation not found.'
+      });
+    }
+
     this.showAddMembersModal = true;
   }
 
@@ -109,29 +172,6 @@ export class GroupsComponent implements OnInit {
     });
   }
 
-  toggleMember(friend: UserModel) {
-    if (!this.selectedGroup?.id || !friend.id) return;
-
-    if (this.addedMemberIds.has(friend.id)) {
-      // Already added in this session — remove
-      this.groupMemberService.removeMember(this.selectedGroup.id, friend.id).subscribe({
-        next: () => this.addedMemberIds.delete(friend.id!),
-        error: (err) => {
-          console.error('Error removing member:', err);
-          this.addMemberError = 'Failed to remove member.';
-        }
-      });
-    } else {
-      // Add member
-      this.groupMemberService.addMember(this.selectedGroup.id, friend.id).subscribe({
-        next: () => this.addedMemberIds.add(friend.id!),
-        error: (err) => {
-          console.error('Error adding member:', err);
-          this.addMemberError = 'Failed to add member.';
-        }
-      });
-    }
-  }
 
   closeAddMembersModal() {
     this.showAddMembersModal = false;

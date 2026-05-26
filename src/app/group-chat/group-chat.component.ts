@@ -27,6 +27,7 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
   group!: GroupModel;
+  groupId!: number;
   members: GroupMemberModel[] = [];
   messages: Message[] = [];
   newMessage = '';
@@ -88,10 +89,11 @@ export class GroupChatComponent implements OnInit, OnDestroy {
 
   private loadGroup(groupId: number) {
     this.isLoading = true;
+    this.groupId = groupId;
     this.groupService.getGroup(groupId).subscribe({
       next: (group: GroupModel) => {
         this.group = group;
-        this.loadMembers(groupId); // conversation loads inside here
+        this.loadMembers(groupId);
       },
       error: (err) => {
         console.error('Error loading group:', err);
@@ -104,15 +106,14 @@ export class GroupChatComponent implements OnInit, OnDestroy {
     this.groupService.getMembers(groupId).subscribe({
       next: (data) => {
         this.members = data.content;
-        const memberIds = this.members.map(m => m.member!.id!);
-        this.loadConversation(memberIds);
+        this.loadConversation(groupId);
       },
       error: (err) => console.error('Error loading members:', err),
     });
   }
 
-  private loadConversation(memberIds: number[]) {
-    this.groupService.getGroupConversation(memberIds).subscribe({
+  private loadConversation(groupId: number) {
+    this.groupService.getGroupConversation(groupId).subscribe({
       next: (conv: ConversationDTO) => {
         this.conversation = conv;
         this.loadMessages();
@@ -126,7 +127,6 @@ export class GroupChatComponent implements OnInit, OnDestroy {
       },
     });
   }
-
 
   private loadMessages() {
     if (!this.conversation) return;

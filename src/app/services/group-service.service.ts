@@ -24,7 +24,6 @@ export class GroupService {
   private readonly userBaseUrl = 'http://localhost:5500/api/users';
   private convUrl = 'http://localhost:5600/api/conversation';
 
-
   constructor(
     private http: HttpClient,
     private authService: AuthService
@@ -34,14 +33,46 @@ export class GroupService {
     return { Authorization: `Bearer ${this.authService.getToken()}` };
   }
 
-  getGroupConversation(memberIds: number[]) {
+  getGroupConversation(groupId: number) {
     return this.http.get<ConversationDTO>(
-      `${this.convUrl}?participant_ids=${memberIds.join(',')}&conversation_type=${ConversationType.GROUP}`,
-      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+      `${this.convUrl}/group/${groupId}`,
+      { headers: this.authHeader }
     );
   }
 
-  // GET /group/{groupId}
+  // new — used by toggleMember
+  getConversationById(convId: string) {
+    return this.http.get<ConversationDTO>(
+      `${this.convUrl}/${convId}`,
+      { headers: this.authHeader }
+    );
+  }
+
+  // NEW — call this right after createGroup() succeeds
+  createGroupConversation(group: GroupModel, memberIds: number[]) {
+    const currentId = this.authService.getId()!;
+    const participants = Array.from(new Set([currentId, ...memberIds]));
+
+    const conversation: ConversationDTO = {
+      id: null,
+      type: ConversationType.GROUP,
+      groupId: group.id,
+      name: group.name,
+      participants,
+      isBlocked: {},
+      createdAt: null,
+      updatedAt: null,
+      lastModifiedBy: null,
+    };
+
+    return this.http.post<ConversationDTO>(
+      this.convUrl,
+      conversation,
+      { headers: this.authHeader }
+    );
+  }
+
+  // unchanged from here down
   getGroup(groupId: number) {
     return this.http.get<GroupModel>(
       `${this.baseUrl}/${groupId}`,
@@ -49,22 +80,24 @@ export class GroupService {
     );
   }
 
+  updateGroupConversation(convId: string, conv: ConversationDTO) {
+    return this.http.put<ConversationDTO>(
+      `${this.convUrl}/${convId}`,
+      conv,
+      { headers: this.authHeader }
+    );
+  }
+
   getUserGroups(page: number = 1) {
     const userId = this.authService.getId();
-
-    if (!userId) {
-      throw new Error('User ID is missing');
-    }
-
+    if (!userId) throw new Error('User ID is missing');
     const pageIndex = page - 1;
-
     return this.http.get<PageResponse<GroupModel>>(
       `${this.baseUrl}/${userId}/groups?page=${pageIndex}&size=10&sort=id,asc`,
       { headers: this.authHeader }
     );
   }
 
-  // POST /group
   createGroup(name: string, description: string | null, image: string | null) {
     const dto: GroupDTO = {
       name,
@@ -79,7 +112,6 @@ export class GroupService {
     );
   }
 
-  // PATCH /group/{groupId}
   updateGroup(groupId: number, dto: Partial<GroupDTO>) {
     return this.http.patch<GroupModel>(
       `${this.baseUrl}/${groupId}`,
@@ -88,7 +120,6 @@ export class GroupService {
     );
   }
 
-  // DELETE /group/{groupId}
   deleteGroup(groupId: number) {
     return this.http.delete<void>(
       `${this.baseUrl}/${groupId}`,
@@ -96,7 +127,6 @@ export class GroupService {
     );
   }
 
-  // GET /group/{groupId}/members
   getMembers(groupId: number, page: number = 1) {
     const pageIndex = page - 1;
     return this.http.get<PageResponse<GroupMemberModel>>(
@@ -105,7 +135,6 @@ export class GroupService {
     );
   }
 
-  // GET /group/{groupId}/admin
   getAdmins(groupId: number, page: number = 1) {
     const pageIndex = page - 1;
     return this.http.get<PageResponse<GroupMemberModel>>(
@@ -114,7 +143,6 @@ export class GroupService {
     );
   }
 
-  // PATCH /group/{groupId}/setAdmin/{userId}
   setAdmin(groupId: number, userId: number) {
     return this.http.patch<GroupMemberModel>(
       `${this.baseUrl}/${groupId}/setAdmin/${userId}`,
@@ -123,7 +151,6 @@ export class GroupService {
     );
   }
 
-  // GET /group/{groupId}/isMember/{userId}
   isMember(groupId: number, userId: number) {
     return this.http.get<boolean>(
       `${this.baseUrl}/${groupId}/isMember/${userId}`,
