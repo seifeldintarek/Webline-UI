@@ -1,76 +1,72 @@
 <div class="update-profile-container">
-    <h2>Update Profile</h2>
+  <h2>Update Profile</h2>
 
-    <form [formGroup]="profileForm" (ngSubmit)="onSubmit($event)">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 
-        <!-- First Name -->
-        <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" formControlName="firstName" class="form-control" />
-            <small *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched"
-                class="text-danger">
-                First name is required.
-            </small>
-        </div>
+    <!-- First Name -->
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" formControlName="firstName" class="form-control" />
+      <small *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="text-danger">
+        First name is required.
+      </small>
+    </div>
 
-        <!-- Last Name -->
-        <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" formControlName="lastName" class="form-control" />
-            <small *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched"
-                class="text-danger">
-                Last name is required.
-            </small>
-        </div>
+    <!-- Last Name -->
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" formControlName="lastName" class="form-control" />
+      <small *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="text-danger">
+        Last name is required.
+      </small>
+    </div>
 
-        <!-- Email -->
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" formControlName="email" class="form-control" />
-            <small *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-danger">
-                Enter a valid email.
-            </small>
-        </div>
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" formControlName="email" class="form-control" />
+      <small *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-danger">
+        Enter a valid email.
+      </small>
+    </div>
 
-        <!-- Mobile Phone -->
-        <div class="form-group">
-            <label for="mobilePhone">Mobile Phone</label>
-            <input type="text" id="mobilePhone" formControlName="mobilePhone" class="form-control" />
-            <small *ngIf="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched"
-                class="text-danger">
-                Enter a valid Egyptian mobile number.
-            </small>
-        </div>
+    <!-- Mobile Phone -->
+    <div class="form-group">
+      <label for="mobilePhone">Mobile Phone</label>
+      <input type="text" id="mobilePhone" formControlName="mobilePhone" class="form-control" />
+      <small *ngIf="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched"
+        class="text-danger">
+        Enter a valid Egyptian mobile number.
+      </small>
+    </div>
 
-        <!-- Password -->
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" formControlName="password" class="form-control" />
-            <small *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched"
-                class="text-danger">
-                Password must be at least 10 characters.
-            </small>
-        </div>
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" formControlName="password" class="form-control" />
+      <small *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched" class="text-danger">
+        Password must be at least 10 characters.
+      </small>
+    </div>
 
-        <!-- Confirm Password -->
-        <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" />
-            <small
-                *ngIf="profileForm.get('confirmPassword')?.value !== profileForm.get('password')?.value && profileForm.get('confirmPassword')?.touched"
-                class="text-danger">
-                Passwords do not match.
-            </small>
-        </div>
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" />
+      <small *ngIf="profileForm.get('confirmPassword')?.errors?.['mismatch']
+           && profileForm.get('confirmPassword')?.touched" class="text-danger">
+        Passwords do not match.
+      </small>
+    </div>
 
-        <!-- Profile Image -->
-        <div class="form-group">
-            <label for="image">Profile Image</label>
-            <input type="file" (change)="onFileChange($any($event.target).files)" class="form-control" />
-        </div>
+    <!-- Profile Image -->
+    <div class="form-group">
+      <label for="image">Profile Image</label>
+      <input type="file" (change)="onFileChange($event)" class="form-control" />
+    </div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
-            Update Profile
-        </button>
-    </form>
+    <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
+      Update Profile
+    </button>
+  </form>
 </div>

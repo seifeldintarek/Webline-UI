@@ -7,23 +7,41 @@ import { UserModel } from '../models/user-model';
   providedIn: 'root'
 })
 export class UserService {
+  private apiUrl = 'http://localhost:5500/api/users/user';
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private authService: AuthService
   ) { }
 
   setImage(image: string) {
     const userId = this.authService.getId();
-    return this.http.post<string>(`/api/users/user/${userId}/image`, image, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+
+    return this.http.post(
+      `${this.apiUrl}/${userId}/image`,
+      image,
+      {
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken()}`
+        },
+        responseType: 'text'
+      }
+    );
   }
 
   updateUser(newUser: UserModel) {
-    if (!newUser) return;
     const userId = this.authService.getId();
-    return this.http.patch<UserModel>(`/api/users/user/${userId}`, newUser, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.patch<UserModel>(
+      `${this.apiUrl}/${userId}`,
+      newUser,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    );
   }
 
   getUserById(userId: number) {
-    return this.http.get<UserModel>(`/api/users/user/${userId}`, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } });
+    return this.http.get<UserModel>(
+      `${this.apiUrl}/${userId}`,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    );
   }
 }
