@@ -24,16 +24,14 @@ export class GroupMemberService {
 
 
 
-  // GET /group/{groupId}/admin
-  getAdmins(groupId: number, page: number = 1) {
+  getAdmin(groupId: number, page: number = 1) {
     const pageIndex = page - 1;
     return this.http.get<PageResponse<GroupMemberModel>>(
-      `${this.baseUrl}/${groupId}?page=${pageIndex}&size=10`,
+      `${this.groupUrl}/${groupId}/admin?page=${pageIndex}&size=10`,
       { headers: this.authHeader }
     );
   }
 
-  // POST /group/{groupId}/members  — add a member
   addMember(groupId: number, userId: number) {
     const dto: Partial<GroupMemberDTO> = {
       member: {
@@ -53,7 +51,6 @@ export class GroupMemberService {
     );
   }
 
-  // DELETE /group/{groupId}/members/{userId}  — remove a member
   removeMember(groupId: number, userId: number) {
 
     return this.http.delete<void>(
@@ -62,7 +59,6 @@ export class GroupMemberService {
     );
   }
 
-  // PATCH /group/{groupId}/setAdmin/{userId}
   setAdmin(groupId: number, userId: number) {
     return this.http.patch<GroupMemberModel>(
       `${this.baseUrl}/${groupId}/setAdmin/${userId}`,
@@ -71,10 +67,16 @@ export class GroupMemberService {
     );
   }
 
-  // GET /group/{groupId}/isMember/{userId}
   isMember(groupId: number, userId: number) {
     return this.http.get<boolean>(
-      `${this.groupUrl}/${groupId}/isMember/${userId}`,
+      `${this.baseUrl}/${groupId}/isMember/${userId}`,
+      { headers: this.authHeader }
+    );
+  }
+
+  isAdmin(groupId: number, userId: number) {
+    return this.http.get<boolean>(
+      `${this.baseUrl}/${groupId}/${userId}/isAdmin`,
       { headers: this.authHeader }
     );
   }

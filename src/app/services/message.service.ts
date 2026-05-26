@@ -18,10 +18,12 @@ export class MessageService {
   }
 
   deleteConversation(conversationId: string) {
-    this.http.delete('http://localhost:5600/api/conversation/' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    this.http.delete(
+      'http://localhost:5500/api/messages/conversation/' + conversationId,
+      { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     ).subscribe({
       next: () => {
-        this.deleteConversation(conversationId);
+        console.log('Conversation deleted successfully');
       },
       error: (err) => {
         console.error('Error deleting conversation:', err);

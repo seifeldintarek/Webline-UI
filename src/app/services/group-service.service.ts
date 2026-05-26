@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GroupModel } from '../models/group-model';
 import { GroupMemberModel } from '../models/group-member-model';
@@ -23,6 +24,8 @@ export class GroupService {
   private readonly baseUrl = 'http://localhost:5500/api/users/group';
   private readonly userBaseUrl = 'http://localhost:5500/api/users';
   private convUrl = 'http://localhost:5600/api/conversation';
+  private msgBase = 'http://localhost:5600/api';
+
 
   constructor(
     private http: HttpClient,
@@ -120,6 +123,22 @@ export class GroupService {
     );
   }
 
+  deleteGroupConversationAndMessages(convId: string) {
+    // DELETE /{convId} — deletes all messages for the conversation
+    // DELETE /conversation/{convId} — deletes the conversation document
+    return this.http.delete<void>(
+      `${this.msgBase}/${convId}`,
+      { headers: this.authHeader }
+    ).pipe(
+      switchMap(() =>
+        this.http.delete<void>(
+          `${this.convUrl}/${convId}`,
+          { headers: this.authHeader }
+        )
+      )
+    );
+  }
+
   deleteGroup(groupId: number) {
     return this.http.delete<void>(
       `${this.baseUrl}/${groupId}`,
@@ -135,26 +154,5 @@ export class GroupService {
     );
   }
 
-  getAdmins(groupId: number, page: number = 1) {
-    const pageIndex = page - 1;
-    return this.http.get<PageResponse<GroupMemberModel>>(
-      `${this.baseUrl}/${groupId}/admin?page=${pageIndex}&size=10`,
-      { headers: this.authHeader }
-    );
-  }
 
-  setAdmin(groupId: number, userId: number) {
-    return this.http.patch<GroupMemberModel>(
-      `${this.baseUrl}/${groupId}/setAdmin/${userId}`,
-      {},
-      { headers: this.authHeader }
-    );
-  }
-
-  isMember(groupId: number, userId: number) {
-    return this.http.get<boolean>(
-      `${this.baseUrl}/${groupId}/isMember/${userId}`,
-      { headers: this.authHeader }
-    );
-  }
 }
