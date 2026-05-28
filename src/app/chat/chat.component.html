@@ -34,7 +34,16 @@
     <div *ngFor="let msg of messages; trackBy: trackByIndex"
       [ngClass]="{'message': true, 'sent': msg.senderId === currentId, 'received': msg.senderId !== currentId}">
       <div class="message-bubble">
-        <span>{{ msg.content }}</span>
+
+        <!-- Image attachment -->
+        <ng-container *ngIf="msg.contentType === 'IMAGE' && msg.attachment">
+          <img class="message-image" [src]="msg.attachment.url" [alt]="msg.attachment.fileName"
+            (click)="openImageFullscreen(msg.attachment.url)" />
+        </ng-container>
+
+        <!-- Text content (skip empty strings on image-only messages) -->
+        <span *ngIf="msg.content">{{ msg.content }}</span>
+
         <div class="message-time">{{ msg.timestamp | date:'shortTime' }}</div>
       </div>
     </div>
@@ -47,11 +56,39 @@
     </div>
   </div>
 
+  <!-- Image Preview Strip (shown above input when an image is selected) -->
+  <div *ngIf="imagePreviewUrl" class="image-preview-strip">
+    <div class="image-preview-wrapper">
+      <img [src]="imagePreviewUrl" alt="Preview" class="image-preview-thumb" />
+      <button class="remove-image-btn" (click)="clearImagePreview()" title="Remove image">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <span class="image-preview-name">{{ selectedImageFile?.name }}</span>
+  </div>
+
   <!-- Input Area -->
   <div class="chat-input">
-    <input type="text" class="message-input" placeholder="Write something..." [(ngModel)]="newMessage"
+    <!-- Hidden file input -->
+    <input #fileInput type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)" />
+
+    <!-- Image attach button -->
+    <button class="attach-button" (click)="triggerFileInput(fileInput)" [disabled]="!isConnected" title="Send an image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </button>
+
+    <input type="text" class="message-input"
+      placeholder="{{ selectedImageFile ? 'Add a caption…' : 'Write something…' }}" [(ngModel)]="newMessage"
       (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
-    <button class="send-button" (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">
+
+    <button class="send-button" (click)="sendMessage()" [disabled]="!canSend">
       Send
     </button>
   </div>
