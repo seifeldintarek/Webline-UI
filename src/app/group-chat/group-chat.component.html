@@ -1,0 +1,114 @@
+<div class="gc-shell">
+
+  <!-- ── SIDEBAR: member panel ── -->
+  <aside class="gc-members-panel" [class.open]="showMembers">
+    <div class="gc-members-header">
+      <span class="gc-members-title">Members</span>
+      <span class="gc-members-count">{{ members.length }}</span>
+    </div>
+    <ul class="gc-members-list">
+      <li *ngFor="let m of members" class="gc-member-row">
+        <div class="gc-member-avatar sm"
+          [style.backgroundImage]="m.member?.image ? 'url(' + m.member?.image + ')' : 'none'">
+          <span *ngIf="!m.member?.image">
+            {{ (m.member?.firstName?.[0] ?? '') + (m.member?.lastName?.[0] ?? '') | uppercase }}
+          </span>
+        </div>
+        <div class="gc-member-meta">
+          <span class="gc-member-name">{{ m.member?.firstName }} {{ m.member?.lastName }}</span>
+          <span class="gc-member-role" [class.admin]="m.role === 'ADMIN'">{{ m.role }}</span>
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ── MAIN CHAT AREA ── -->
+  <div class="gc-chat">
+
+    <!-- Header -->
+    <header class="gc-header">
+      <div class="gc-header-left">
+        <div class="gc-group-icon">
+          <img *ngIf="group?.image" [src]="group.image" [alt]="group?.name" />
+          <span *ngIf="!group?.image">{{ group?.name?.[0] | uppercase }}</span>
+        </div>
+        <div class="gc-group-info">
+          <h2 class="gc-group-name">{{ group?.name ?? '...' }}</h2>
+          <span class="gc-group-sub">{{ members.length }} members</span>
+        </div>
+      </div>
+      <div class="gc-header-right">
+        <div class="gc-conn-pill" [class.online]="isConnected">
+          <span class="gc-conn-dot"></span>
+          {{ isConnected ? 'Connected' : 'Connecting…' }}
+        </div>
+        <button class="gc-members-toggle" (click)="toggleMembers()" [class.active]="showMembers"
+          title="Toggle member list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="7" r="4" />
+            <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            <path d="M21 21v-2a4 4 0 0 0-3-3.85" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Offline banner -->
+    <div *ngIf="!isConnected" class="gc-offline-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="gc-warn-icon">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      Connecting to server — messages are paused
+    </div>
+
+    <!-- Loading skeleton -->
+    <div *ngIf="isLoading" class="gc-loading">
+      <div class="gc-skeleton" *ngFor="let i of [1,2,3,4,5]"></div>
+    </div>
+
+    <!-- Messages -->
+    <div class="gc-messages" #messagesContainer *ngIf="!isLoading">
+      <div *ngIf="messages.length === 0" class="gc-empty">
+        <div class="gc-empty-icon">💬</div>
+        <p>No messages yet — be the first to say hello!</p>
+      </div>
+
+      <div *ngFor="let msg of messages; trackBy: trackByIndex" class="gc-msg-row"
+        [class.gc-msg-mine]="msg.senderId === currentId" [class.gc-msg-theirs]="msg.senderId !== currentId">
+
+        <!-- Avatar (only for others) -->
+        <div *ngIf="msg.senderId !== currentId" class="gc-msg-avatar"
+          [style.backgroundImage]="getMemberAvatar(msg.senderId) ? 'url(' + getMemberAvatar(msg.senderId) + ')' : 'none'">
+          <span *ngIf="!getMemberAvatar(msg.senderId)">{{ getMemberInitials(msg.senderId) }}</span>
+          <span *ngIf="isAdminOf(msg.senderId)" class="gc-admin-badge" title="Admin">★</span>
+        </div>
+
+        <div class="gc-msg-body">
+          <!-- Sender name (for others) -->
+          <span *ngIf="msg.senderId !== currentId" class="gc-sender-name">
+            {{ getMemberName(msg.senderId) }}
+          </span>
+          <div class="gc-bubble">
+            <span class="gc-bubble-text">{{ msg.content }}</span>
+            <span class="gc-bubble-time">{{ msg.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input bar -->
+    <div class="gc-input-bar">
+      <input class="gc-input" type="text" placeholder="Message the group…" [(ngModel)]="newMessage"
+        (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
+      <button class="gc-send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

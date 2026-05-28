@@ -7,12 +7,13 @@ import { ChatComponent } from '../chat/chat.component';
 import { AuthService } from '../services/auth.service';
 import { RequestsComponent } from '../requests/requests.component';
 import { UpdateProfileComponent } from '../updateprofile/updateprofile.component';
+import { GroupsComponent } from '../groups/groups.component';
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, SearchComponent, FriendshipComponent, RequestsComponent, ChatComponent, UpdateProfileComponent,
+  imports: [CommonModule, SearchComponent, GroupsComponent, FriendshipComponent, RequestsComponent, ChatComponent, UpdateProfileComponent,
     RouterOutlet, RouterLink, RouterLinkActive
   ],
   templateUrl: './home.component.html',

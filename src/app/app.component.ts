@@ -13,16 +13,16 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   title = 'xchat_app';
-  isLoading = true;  // hide router until we know where to go
+  isLoading = true;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.authService.validateToken().subscribe(isValid => {
       if (isValid) {
-        this.router.navigate(['/home/friends']);
+        this.router.navigate(['/home']);
       }
-      this.isLoading = false;  // now show whatever route was navigated to
+      this.isLoading = false;
     });
   }
 }

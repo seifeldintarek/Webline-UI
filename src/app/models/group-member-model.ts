@@ -1,11 +1,19 @@
-import { Group } from "../group/group.component";
-import { User } from "../user/user.component";
+import { GroupModel } from './group-model';
+import { UserModel } from './user-model';
+
+export type GroupMemberRole = 'ADMIN' | 'MEMBER';
 
 export interface GroupMemberModel {
-    id: number;
-    groupId: Group;
-    member: User;
-    role: 'MEMBER' | 'ADMIN';
-    joinedAt: Date;
-    updatedAt: Date;
+  id: number | null;
+  group: GroupModel | null;
+  member: UserModel | null;
+  role: GroupMemberRole;
+  joinedAt?: string | null;
+}
+
+export interface GroupMemberDTO {
+  id?: number | null;
+  group: GroupModel | null;
+  member: UserModel | null;
+  role: GroupMemberRole;
 }

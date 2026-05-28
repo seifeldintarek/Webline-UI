@@ -41,6 +41,7 @@ export class FriendshipService {
     );
   }
 
+
   getFriendRequests(page: number = 1) {
     const currentPage = page - 1;
     const userId = this.authService.getId();
