@@ -24,7 +24,7 @@ export class GroupService {
   private readonly baseUrl = 'http://localhost:5500/api/users/group';
   private readonly userBaseUrl = 'http://localhost:5500/api/users';
   private convUrl = 'http://localhost:5600/api/conversation';
-  private msgBase = 'http://localhost:5600/api';
+  private msgBase = 'http://localhost:5600/api/messages';
 
 
   constructor(

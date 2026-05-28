@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from '../services/message.service';
 import { ConversationType } from '../models/conversation-model';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-friendship',
@@ -54,9 +55,10 @@ export class FriendshipComponent implements OnInit {
       state: { user: friend }
     });
   }
+
   removeFriend(uid: number) {
     const currentuser = this.authService.getId();
-    let friendship: FriendshipModel = {
+    const friendship: FriendshipModel = {
       senderId: uid,
       receiverId: currentuser!,
       createdAt: null,
@@ -69,20 +71,21 @@ export class FriendshipComponent implements OnInit {
       next: (data) => {
         this.friendshipService.removeRequest(friendship).subscribe({
           next: () => {
-            console.log('Friend removed successfully');
-            this.messageService.deleteConversation(data.id!);
-            this.friends = this.friends.filter(req => req.id !== uid);
-
-            this.router.navigate(['friends']);
+            this.messageService.deleteMessages(data.id!).pipe(
+              switchMap(() => this.messageService.deleteConversation(data.id!))
+            ).subscribe({
+              next: () => {
+                console.log('Messages and conversation deleted successfully');
+                this.friends = this.friends.filter(req => req.id !== uid);
+                this.router.navigate(['friends']);
+              },
+              error: (err) => console.error('Error during cleanup:', err)
+            });
           },
-          error: (err) => {
-            console.error('Error removing friend request:', err);
-          }
+          error: (err) => console.error('Error removing friend request:', err)
         });
       },
-      error: (err) => {
-        console.error('Error fetching conversation:', err);
-      }
+      error: (err) => console.error('Error fetching conversation:', err)
     });
   }
 
