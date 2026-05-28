@@ -25,6 +25,9 @@ export class WebSocketService {
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
       debug: (str: string) => console.log(str),
+      connectHeaders: {
+        Authorization: `Bearer ${this.authService.getToken()}`
+      }
     });
 
     this.stompClient.onConnect = () => {
@@ -60,7 +63,7 @@ export class WebSocketService {
       };
       console.log('Sending message:', messageObj);
       this.stompClient.publish({
-        destination: `/app/chat.sendMessage/${conversationId}`,
+        destination: `/app/messages/chat.sendMessage/${conversationId}`,
         body: JSON.stringify(messageObj),
       });
     } else {

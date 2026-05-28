@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { UserService } from '../services/user.service';
 import { AuthService } from '../services/auth.service';
 import { UserModel } from '../models/user-model';
@@ -16,7 +16,6 @@ export class UpdateProfileComponent implements OnInit {
 
   profileForm!: FormGroup;
   image: string = '';
-  confirmPass: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -32,14 +31,23 @@ export class UpdateProfileComponent implements OnInit {
       mobilePhone: new FormControl(user?.mobilePhone || '', [
         Validators.pattern(/^01[0125][0-9]{8}$/)
       ]),
-      password: new FormControl(user?.password || '', [Validators.minLength(10)]),
-      confirmPassword: new FormControl(user?.password || '')
-    });
+      password: new FormControl('', [Validators.minLength(10)]),
+      confirmPassword: new FormControl('')
+    }, { validators: this.passwordMatchValidator });
   }
 
-  onSubmit(event: Event) {
-    event.preventDefault();
+  passwordMatchValidator(form: AbstractControl) {
+    const pass = form.get('password')?.value;
+    const confirm = form.get('confirmPassword')?.value;
+    if (pass && pass !== confirm) {
+      form.get('confirmPassword')?.setErrors({ mismatch: true });
+    } else {
+      form.get('confirmPassword')?.setErrors(null);
+    }
+    return null;
+  }
 
+  onSubmit() {
     if (!this.profileForm.valid) {
       console.error('Form is invalid');
       return;
@@ -57,14 +65,26 @@ export class UpdateProfileComponent implements OnInit {
       lastName: formData.lastName ?? null,
       email: formData.email ?? null,
       mobilePhone: formData.mobilePhone ?? null,
-      password: formData.password ?? null,
+      password: formData.password || null,
       id: this.authService.getId()!,
-      image: this.image ?? null,
+      image: null
     };
 
     this.userService.updateUser(updatedUser)?.subscribe({
-      next: (res) => this.authService.setCurrentUser(res),
-      error: (e) => console.error(e)
+      next: (res) => {
+        this.authService.setCurrentUser(res);
+        console.log('Profile updated successfully');
+
+        if (this.image) {
+          this.userService.setImage(this.image).subscribe({
+            next: (imageUrl) => {
+              console.log('Image updated successfully', imageUrl);
+            },
+            error: (e) => console.error('Image update failed', e)
+          });
+        }
+      },
+      error: (e) => console.error('Profile update failed', e)
     });
   }
 
@@ -89,5 +109,7 @@ export class UpdateProfileComponent implements OnInit {
       this.image = '';
     };
     reader.readAsDataURL(file);
+
+    console.log('Selected image:', this.image);
   }
 }
