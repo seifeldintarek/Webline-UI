@@ -13,7 +13,7 @@ export class MessageService {
   ) { }
 
   getMessages(conversationId: string) {
-    return this.http.get<Message[]>('http://localhost:5600/api/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    return this.http.get<Message[]>('http://localhost:5600/api/messages' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     );
   }
 
@@ -21,7 +21,7 @@ export class MessageService {
     this.http.delete('http://localhost:5600/api/conversation/' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     ).subscribe({
       next: () => {
-        this.deleteConversation(conversationId);
+        this.deleteMessages(conversationId);
       },
       error: (err) => {
         console.error('Error deleting conversation:', err);
@@ -30,7 +30,7 @@ export class MessageService {
   }
 
   deleteMessages(conversationId: string) {
-    this.http.delete('http://localhost:5600/api/' + conversationId + '/messages', { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
+    this.http.delete('http://localhost:5600/api/messages' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
     ).subscribe({
       next: () => {
         console.log('Messages deleted successfully');
