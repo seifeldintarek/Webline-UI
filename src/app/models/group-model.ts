@@ -1,10 +1,10 @@
-import { User } from "../user/user.component";
+import { UserModel } from "./user-model";
 
 export interface GroupModel {
   id: number;
   name: string;
   description: string | null;
   image: string | null;
-  createdBy: User | null;
+  createdBy: UserModel | null;
 }
 

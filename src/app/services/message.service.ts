@@ -13,31 +13,29 @@ export class MessageService {
   ) { }
 
   getMessages(conversationId: string) {
-    return this.http.get<Message[]>('http://localhost:5600/api/messages' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
-    );
+    return this.http.get<Message[]>(`http://localhost:5600/api/messages/${conversationId}`, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
+    });
   }
 
-  deleteConversation(conversationId: string) {
-    this.http.delete('http://localhost:5600/api/conversation/' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
-    ).subscribe({
-      next: () => {
-        this.deleteMessages(conversationId);
-      },
-      error: (err) => {
-        console.error('Error deleting conversation:', err);
-      }
+  uploadImage(file: File, conversationId: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('conversationId', conversationId);
+    return this.http.post<any>(`http://localhost:5600/api/messages/upload`, formData, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
 
   deleteMessages(conversationId: string) {
-    this.http.delete('http://localhost:5600/api/messages' + conversationId, { headers: { Authorization: `Bearer ${this.authService.getToken()}` } }
-    ).subscribe({
-      next: () => {
-        console.log('Messages deleted successfully');
-      },
-      error: (err) => {
-        console.error('Error deleting messages:', err);
-      }
+    return this.http.delete<void>(`http://localhost:5600/api/messages/${conversationId}`, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
+    });
+  }
+
+  deleteConversation(conversationId: string) {
+    return this.http.delete<void>(`http://localhost:5600/api/conversation/${conversationId}`, {
+      headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
 

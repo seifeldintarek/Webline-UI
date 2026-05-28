@@ -108,9 +108,8 @@
         </p-button>
 
         <!-- FIX 1: disable Delete/Leave button until admin statuses are loaded -->
-        <p-button [label]="isAdmin(group.id!) ? 'Delete' : 'Leave'"
-          [severity]="isAdmin(group.id!) ? 'danger' : 'warning'" [disabled]="!adminStatusesLoaded"
-          (click)="deleteOrLeaveGroup(group.id!)">
+        <p-button [label]="isAdmin(group.id!) ? 'Delete' : 'Leave'" [severity]="isAdmin(group.id!) ? 'danger' : 'warn'"
+          [disabled]="!adminStatusesLoaded" (click)="deleteOrLeaveGroup(group.id!)">
         </p-button>
       </div>
 

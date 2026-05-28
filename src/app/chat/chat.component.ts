@@ -31,6 +31,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   currentId = this.authService.getId();
   isLoading = true;
 
+  // Image attachment state
+  selectedImageFile: File | null = null;
+  imagePreviewUrl: string | null = null;
+
   private messageSubscription!: Subscription;
   private connectionSubscription!: Subscription;
   private routeSubscription!: Subscription;
@@ -185,20 +189,58 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    console.log('Send check:', {
-      message: this.newMessage.trim(),
-      isConnected: this.isConnected,
-      conversation: this.conversation
-    });
-
-    if (!this.newMessage.trim() || !this.isConnected || !this.conversation) {
+    if (!this.isConnected || !this.conversation) {
       console.warn('Cannot send message: missing requirements');
       return;
     }
 
+    // Image send path
+    if (this.selectedImageFile) {
+      this.webSocketService.sendImageMessage(this.selectedImageFile, this.conversation.id!);
+      this.clearImagePreview();
+      return;
+    }
+
+    // Text send path
+    if (!this.newMessage.trim()) return;
+
     const messageContent = this.newMessage;
     this.newMessage = '';
     this.webSocketService.sendMessage(messageContent, this.conversation.id!);
+  }
+
+  /** Opens the hidden file input */
+  triggerFileInput(fileInput: HTMLInputElement) {
+    fileInput.value = '';   // reset so same file can be re-selected
+    fileInput.click();
+  }
+
+  /** Called when the user picks a file */
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      console.warn('Only image files are supported');
+      return;
+    }
+
+    this.selectedImageFile = file;
+    const reader = new FileReader();
+    reader.onload = () => (this.imagePreviewUrl = reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  /** Discard the pending image */
+  clearImagePreview() {
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
+  }
+
+  /** True when the send button should be enabled */
+  get canSend(): boolean {
+    return this.isConnected && (!!this.newMessage.trim() || !!this.selectedImageFile);
   }
 
   private showTypingIndicator() {
@@ -218,5 +260,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   trackByIndex(index: number, item: any): number {
     return index;
+  }
+
+  /** Opens the image in a new tab for full-size viewing */
+  openImageFullscreen(url: string | String) {
+    window.open(url as string, '_blank');
   }
 }
