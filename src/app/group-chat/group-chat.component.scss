@@ -246,20 +246,47 @@
 }
 
 .gc-input-bar {
-  padding: 14px;
+  padding: 12px 14px;
   background: #fff;
   border-top: 1px solid #e5e7eb;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
+}
+
+.gc-attach-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.gc-attach-btn:hover:not(:disabled) {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.gc-attach-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .gc-input {
   flex: 1;
   border: 1px solid #d1d5db;
   border-radius: 999px;
-  padding: 12px 16px;
+  padding: 11px 16px;
   outline: none;
   font-size: 14px;
+  transition: border-color 0.15s;
 }
 
 .gc-input:focus {
@@ -267,14 +294,22 @@
 }
 
 .gc-send-btn {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
+  border: none;
   background: #2563eb;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.gc-send-btn:hover:not(:disabled) {
+  background: #1d4ed8;
 }
 
 .gc-send-btn:disabled {
@@ -283,8 +318,138 @@
 }
 
 .gc-send-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+// ── Attachment preview strips ────────────────────────────────────────────────
+
+.gc-preview-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.gc-preview-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gc-preview-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.gc-preview-name {
+  flex: 1;
+  font-size: 13px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gc-preview-size {
+  font-size: 12px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.gc-remove-btn {
   width: 20px;
   height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  padding: 0;
+}
+
+.gc-remove-btn:hover {
+  background: #dc2626;
+}
+
+// ── Image messages ───────────────────────────────────────────────────────────
+
+.gc-msg-image {
+  max-width: 240px;
+  max-height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.gc-msg-image:hover {
+  opacity: 0.9;
+}
+
+// ── File attachment card ─────────────────────────────────────────────────────
+
+.gc-file-attachment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: inherit;
+  min-width: 200px;
+  transition: background 0.15s;
+}
+
+.gc-file-attachment:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.gc-msg-mine .gc-file-attachment {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.gc-msg-mine .gc-file-attachment:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.gc-file-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.gc-file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gc-file-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gc-file-size {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
 }
 
 .gc-members-panel {

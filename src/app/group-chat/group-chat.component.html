@@ -92,18 +92,79 @@
             {{ getMemberName(msg.senderId) }}
           </span>
           <div class="gc-bubble">
-            <span class="gc-bubble-text">{{ msg.content }}</span>
+            <!-- Image attachment -->
+            <ng-container *ngIf="msg.contentType === MessageType.IMAGE && msg.attachment">
+              <img class="gc-msg-image" [src]="msg.attachment.url" [alt]="msg.attachment.fileName"
+                (click)="openImageFullscreen(msg.attachment.url)" />
+            </ng-container>
+
+            <!-- File attachment -->
+            <ng-container *ngIf="msg.contentType === MessageType.FILE && msg.attachment">
+              <a class="gc-file-attachment" [href]="msg.attachment.url" target="_blank" rel="noopener noreferrer">
+                <span class="gc-file-icon">{{ getFileIcon(msg.attachment.mimeType) }}</span>
+                <div class="gc-file-info">
+                  <span class="gc-file-name">{{ msg.attachment.fileName }}</span>
+                  <span class="gc-file-size">{{ formatFileSize(msg.attachment.fileSizeBytes) }}</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </a>
+            </ng-container>
+
+            <span class="gc-bubble-text" *ngIf="msg.content">{{ msg.content }}</span>
             <span class="gc-bubble-time">{{ msg.timestamp | date:'shortTime' }}</span>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Image Preview Strip -->
+    <div *ngIf="imagePreviewUrl" class="gc-preview-strip">
+      <div class="gc-preview-wrapper">
+        <img [src]="imagePreviewUrl" alt="Preview" class="gc-preview-thumb" />
+        <button class="gc-remove-btn" (click)="clearAttachment()" title="Remove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <span class="gc-preview-name">{{ selectedAttachmentFile?.name }}</span>
+    </div>
+
+    <!-- File Preview Strip -->
+    <div *ngIf="filePreviewName" class="gc-preview-strip">
+      <span class="gc-file-icon">{{ getFileIcon(selectedAttachmentFile?.type) }}</span>
+      <span class="gc-preview-name">{{ filePreviewName }}</span>
+      <span class="gc-preview-size">{{ formatFileSize(selectedAttachmentFile?.size) }}</span>
+      <button class="gc-remove-btn" (click)="clearAttachment()" title="Remove">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
     <!-- Input bar -->
     <div class="gc-input-bar">
-      <input class="gc-input" type="text" placeholder="Message the group…" [(ngModel)]="newMessage"
+      <input #attachmentInput type="file" accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="display: none"
+        (change)="onAttachmentSelected($event)" />
+
+      <button class="gc-attach-btn" (click)="triggerAttachmentInput(attachmentInput)" [disabled]="!isConnected"
+        title="Attach image or file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path
+            d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+          </path>
+        </svg>
+      </button>
+
+      <input class="gc-input" type="text" [placeholder]="inputPlaceholder" [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
-      <button class="gc-send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || !isConnected">
+      <button class="gc-send-btn" (click)="sendMessage()" [disabled]="!canSend">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="22" y1="2" x2="11" y2="13" />
           <polygon points="22 2 15 22 11 13 2 9 22 2" />

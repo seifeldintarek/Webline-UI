@@ -11,7 +11,7 @@ import { FriendshipService } from '../services/friendship.service';
 import { GroupService } from '../services/group-service.service';
 import { GroupMemberService } from '../services/group-member.service';
 
-import { Message } from '../models/message';
+import { Message, MessageType } from '../models/message';
 import { GroupModel } from '../models/group-model';
 import { GroupMemberModel } from '../models/group-member-model';
 import { ConversationDTO, ConversationType } from '../models/conversation-model';
@@ -32,6 +32,12 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   messages: Message[] = [];
   newMessage = '';
   isConnected = false;
+  readonly MessageType = MessageType;
+
+  // Attachment state
+  selectedAttachmentFile: File | null = null;
+  imagePreviewUrl: string | null = null;
+  filePreviewName: string | null = null;
   isLoading = true;
   showMembers = false;
   conversation: ConversationDTO | null = null;
@@ -144,12 +150,78 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (!this.newMessage.trim() || !this.isConnected || !this.conversation) {
+    if (!this.isConnected || !this.conversation) return;
+
+    if (this.selectedAttachmentFile) {
+      const type = this.selectedAttachmentFile.type.startsWith('image/')
+        ? MessageType.IMAGE
+        : MessageType.FILE;
+      this.webSocketService.sendAttachmentMessage(this.selectedAttachmentFile, this.conversation.id!, type);
+      this.clearAttachment();
       return;
     }
+
+    if (!this.newMessage.trim()) return;
     const content = this.newMessage;
     this.newMessage = '';
     this.webSocketService.sendMessage(content, this.conversation.id!);
+  }
+
+  triggerAttachmentInput(fileInput: HTMLInputElement) {
+    fileInput.value = '';
+    fileInput.click();
+  }
+
+  onAttachmentSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.imagePreviewUrl = null;
+    this.filePreviewName = null;
+    this.selectedAttachmentFile = file;
+
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => (this.imagePreviewUrl = reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      this.filePreviewName = file.name;
+    }
+  }
+
+  clearAttachment() {
+    this.selectedAttachmentFile = null;
+    this.imagePreviewUrl = null;
+    this.filePreviewName = null;
+  }
+
+  get canSend(): boolean {
+    return this.isConnected && (!!this.newMessage.trim() || !!this.selectedAttachmentFile);
+  }
+
+  get inputPlaceholder(): string {
+    return this.selectedAttachmentFile ? 'Add a caption…' : 'Message the group…';
+  }
+
+  openImageFullscreen(url: string) {
+    window.open(url, '_blank');
+  }
+
+  getFileIcon(mimeType: string | undefined): string {
+    if (!mimeType) return '📎';
+    if (mimeType.includes('pdf')) return '📄';
+    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+    if (mimeType.includes('zip') || mimeType.includes('compressed')) return '🗜️';
+    if (mimeType.includes('text')) return '📃';
+    return '📎';
+  }
+
+  formatFileSize(bytes: number | undefined): string {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   getMemberName(senderId: number): string {
