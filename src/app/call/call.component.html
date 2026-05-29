@@ -1,0 +1,17 @@
+<div class="call-wrapper">
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="call-loader">
+    <div class="call-loader__ring"></div>
+    <p class="call-loader__text">Connecting to call…</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error && !isLoading" class="call-error">
+    <div class="call-error__icon">📵</div>
+    <p class="call-error__msg">{{ error }}</p>
+    <button class="call-error__btn" (click)="leaveCall()">Go Back</button>
+  </div>
+
+  <!-- Zego mounts here -->
+  <div id="zego-call-root" [class.hidden]="isLoading || !!error"></div>
+</div>
