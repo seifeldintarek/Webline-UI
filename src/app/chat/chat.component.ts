@@ -31,12 +31,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   currentId = this.authService.getId();
   isLoading = true;
 
-  // Image attachment state
-  selectedImageFile: File | null = null;
-  imagePreviewUrl: string | null = null;
+  readonly MessageType = MessageType;
 
-  // File attachment state
-  selectedFile: File | null = null;
+  // Attachment state
+  selectedAttachmentFile: File | null = null;
+  imagePreviewUrl: string | null = null;
   filePreviewName: string | null = null;
 
   private messageSubscription!: Subscription;
@@ -190,23 +189,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Image send path
-    if (this.selectedImageFile) {
-      this.webSocketService.sendAttachmentMessage(this.selectedImageFile, this.conversation.id!, MessageType.IMAGE);
-      this.clearImagePreview();
+    if (this.selectedAttachmentFile) {
+      const type = this.selectedAttachmentFile.type.startsWith('image/')
+        ? MessageType.IMAGE
+        : MessageType.FILE;
+      this.webSocketService.sendAttachmentMessage(this.selectedAttachmentFile, this.conversation.id!, type);
+      this.clearAttachment();
       return;
     }
 
-    // File send path
-    if (this.selectedFile) {
-      this.webSocketService.sendAttachmentMessage(this.selectedFile, this.conversation.id!, MessageType.FILE);
-      this.clearFilePreview();
-      return;
-    }
-
-    // Text send path
     if (!this.newMessage.trim()) return;
-
     const messageContent = this.newMessage;
     this.newMessage = '';
     this.webSocketService.sendMessage(messageContent, this.conversation.id!);
@@ -217,59 +209,36 @@ export class ChatComponent implements OnInit, OnDestroy {
     fileInput.click();
   }
 
-  triggerFileInput(fileInput: HTMLInputElement) {
-    fileInput.value = '';
-    fileInput.click();
-  }
-
-  onImageSelected(event: Event) {
+  onAttachmentSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
 
-    this.selectedFile = null;
+    this.imagePreviewUrl = null;
     this.filePreviewName = null;
+    this.selectedAttachmentFile = file;
 
-    this.selectedImageFile = file;
-    const reader = new FileReader();
-    reader.onload = () => (this.imagePreviewUrl = reader.result as string);
-    reader.readAsDataURL(file);
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => (this.imagePreviewUrl = reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      this.filePreviewName = file.name;
+    }
   }
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    this.selectedImageFile = null;
+  clearAttachment() {
+    this.selectedAttachmentFile = null;
     this.imagePreviewUrl = null;
-
-    this.selectedFile = file;
-    this.filePreviewName = file.name;
-  }
-
-  clearImagePreview() {
-    this.selectedImageFile = null;
-    this.imagePreviewUrl = null;
-  }
-
-  clearFilePreview() {
-    this.selectedFile = null;
     this.filePreviewName = null;
   }
 
   get canSend(): boolean {
-    return this.isConnected && (
-      !!this.newMessage.trim() ||
-      !!this.selectedImageFile ||
-      !!this.selectedFile
-    );
+    return this.isConnected && (!!this.newMessage.trim() || !!this.selectedAttachmentFile);
   }
 
   get inputPlaceholder(): string {
-    if (this.selectedImageFile) return 'Add a caption…';
-    if (this.selectedFile) return 'Add a caption…';
-    return 'Write something…';
+    return this.selectedAttachmentFile ? 'Add a caption…' : 'Write something…';
   }
 
   private showTypingIndicator() {
@@ -289,8 +258,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     return index;
   }
 
-  openImageFullscreen(url: string | String) {
-    window.open(url as string, '_blank');
+  openImageFullscreen(url: string) {
+    window.open(url, '_blank');
   }
 
   getFileIcon(mimeType: string | undefined): string {

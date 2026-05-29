@@ -90,7 +90,7 @@ export class WebSocketService {
     }
 
     this.messageService.uploadFile(file, conversationId, contentType).subscribe({
-      next: (attachment: any) => {
+      next: (attachment) => {
         const messageObj: Message = {
           id: undefined,
           content: '',
