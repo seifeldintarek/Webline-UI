@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { FriendshipService } from '../services/friendship.service';
 import { ConversationDTO, ConversationType } from '../models/conversation-model';
 import { AuthService } from '../services/auth.service';
-import { Message } from '../models/message';
+import { Message, MessageType } from '../models/message';
 import { MessageService } from '../services/message.service';
 import { UserService } from '../services/user.service';
 
@@ -35,6 +35,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   selectedImageFile: File | null = null;
   imagePreviewUrl: string | null = null;
 
+  // File attachment state
+  selectedFile: File | null = null;
+  filePreviewName: string | null = null;
+
   private messageSubscription!: Subscription;
   private connectionSubscription!: Subscription;
   private routeSubscription!: Subscription;
@@ -54,7 +58,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       const userId = +params['userId'];
       console.log("Loading chat for user ID:", userId);
       if (userId) {
-        // ✅ Reset state on every route change
         this.chatUser = null;
         this.messages = [];
         this.conversation = null;
@@ -107,7 +110,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.userService.getUserById(userId).subscribe({
       next: (user: UserModel) => {
         this.chatUser = user;
-        console.log("Loaded user:", this.chatUser);
         this.setInitials();
         this.loadConversation();
       },
@@ -125,18 +127,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.friendService.getConverstaion([this.chatUser.id!], ConversationType.PRIVATE).subscribe({
       next: (conv: ConversationDTO) => {
         this.conversation = conv;
-        console.log("Fetched existing conversation:", this.conversation);
         this.subscribeToConversation();
         this.loadMessages();
       },
       error: (err) => {
         if (err.status === 404 || err.status === 500) {
-          // ✅ Create conversation if it doesn't exist
-          console.log("Conversation not found, creating...");
           this.friendService.createConversation(this.chatUser!.id!).subscribe({
             next: (conv: ConversationDTO) => {
               this.conversation = conv;
-              console.log("Created new conversation:", this.conversation);
               this.subscribeToConversation();
               this.loadMessages();
             },
@@ -153,7 +151,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ✅ Extracted repeated logic into one method
   private subscribeToConversation() {
     if (this.isConnected && this.conversation?.id) {
       this.webSocketService.subscribeToConversation(this.conversation.id!);
@@ -170,7 +167,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: (msgs: Message[]) => {
         this.messages = msgs;
         this.isLoading = false;
-        console.log("Loaded messages:", this.messages);
       },
       error: (err: any) => {
         console.error("Error fetching messages:", err);
@@ -196,8 +192,15 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     // Image send path
     if (this.selectedImageFile) {
-      this.webSocketService.sendImageMessage(this.selectedImageFile, this.conversation.id!);
+      this.webSocketService.sendAttachmentMessage(this.selectedImageFile, this.conversation.id!, MessageType.IMAGE);
       this.clearImagePreview();
+      return;
+    }
+
+    // File send path
+    if (this.selectedFile) {
+      this.webSocketService.sendAttachmentMessage(this.selectedFile, this.conversation.id!, MessageType.FILE);
+      this.clearFilePreview();
       return;
     }
 
@@ -209,22 +212,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.webSocketService.sendMessage(messageContent, this.conversation.id!);
   }
 
-  /** Opens the hidden file input */
-  triggerFileInput(fileInput: HTMLInputElement) {
-    fileInput.value = '';   // reset so same file can be re-selected
+  triggerAttachmentInput(fileInput: HTMLInputElement) {
+    fileInput.value = '';
     fileInput.click();
   }
 
-  /** Called when the user picks a file */
-  onFileSelected(event: Event) {
+  triggerFileInput(fileInput: HTMLInputElement) {
+    fileInput.value = '';
+    fileInput.click();
+  }
+
+  onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      console.warn('Only image files are supported');
-      return;
-    }
+    this.selectedFile = null;
+    this.filePreviewName = null;
 
     this.selectedImageFile = file;
     const reader = new FileReader();
@@ -232,15 +236,40 @@ export class ChatComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  /** Discard the pending image */
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
+
+    this.selectedFile = file;
+    this.filePreviewName = file.name;
+  }
+
   clearImagePreview() {
     this.selectedImageFile = null;
     this.imagePreviewUrl = null;
   }
 
-  /** True when the send button should be enabled */
+  clearFilePreview() {
+    this.selectedFile = null;
+    this.filePreviewName = null;
+  }
+
   get canSend(): boolean {
-    return this.isConnected && (!!this.newMessage.trim() || !!this.selectedImageFile);
+    return this.isConnected && (
+      !!this.newMessage.trim() ||
+      !!this.selectedImageFile ||
+      !!this.selectedFile
+    );
+  }
+
+  get inputPlaceholder(): string {
+    if (this.selectedImageFile) return 'Add a caption…';
+    if (this.selectedFile) return 'Add a caption…';
+    return 'Write something…';
   }
 
   private showTypingIndicator() {
@@ -249,9 +278,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onKeyUp(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.sendMessage();
-    }
+    if (event.key === 'Enter') this.sendMessage();
   }
 
   closeChat() {
@@ -262,8 +289,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     return index;
   }
 
-  /** Opens the image in a new tab for full-size viewing */
   openImageFullscreen(url: string | String) {
     window.open(url as string, '_blank');
+  }
+
+  getFileIcon(mimeType: string | undefined): string {
+    if (!mimeType) return '📎';
+    if (mimeType.includes('pdf')) return '📄';
+    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+    if (mimeType.includes('zip') || mimeType.includes('compressed')) return '🗜️';
+    if (mimeType.includes('text')) return '📃';
+    return '📎';
+  }
+
+  formatFileSize(bytes: number | undefined): string {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 }

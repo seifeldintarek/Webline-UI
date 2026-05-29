@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Client, Message as StompMessage } from '@stomp/stompjs';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { Message } from '../models/message';
+import { Message, MessageType } from '../models/message';
 import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
 import SockJS from 'sockjs-client';
@@ -46,15 +46,13 @@ export class WebSocketService {
 
     this.stompClient.onDisconnect = () => {
       console.log('STOMP disconnected');
-      this.subscriptions.clear();  // stale subscriptions from dead session
+      this.subscriptions.clear();
       this.connectionStatusSubject.next(false);
     };
 
     this.stompClient.activate();
   }
 
-
-  /** Formats a Date as "yyyy-MM-ddTHH:mm:ss" — matches Java LocalDateTime */
   private toLocalDateTimeString(date: Date): string {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
@@ -62,68 +60,65 @@ export class WebSocketService {
   }
 
   sendMessage(message: string, conversationId: string): void {
-    if (this.stompClient.connected) {
-      const messageObj: Message = {
-        id: undefined,                              // let the server generate the ID
-        content: message,
-        senderId: this.authService.getId()!,
-        conversationId: conversationId,
-        contentType: 'TEXT',
-        timestamp: this.toLocalDateTimeString(new Date()),
-        readBy: [],
-        receivedBy: [],
-        attachment: null
-      };
-      console.log('Sending message:', messageObj);
-      this.stompClient.publish({
-        destination: `/app/chat.sendMessage/${conversationId}`,
-        body: JSON.stringify(messageObj),
-      });
-    } else {
-      console.warn('STOMP is not connected');
-    }
-  }
-
-  sendImageMessage(file: File, conversationId: string): void {
     if (!this.stompClient.connected) {
       console.warn('STOMP is not connected');
       return;
     }
 
-    // Step 1: upload image to Supabase via HTTP, get back the URL
-    this.messageService.uploadImage(file, conversationId).subscribe({
-      next: (attachment) => {
-        // Step 2: send a small STOMP frame with just the Supabase URL — no base64
+    const messageObj: Message = {
+      id: undefined,
+      content: message,
+      senderId: this.authService.getId()!,
+      conversationId,
+      contentType: MessageType.TEXT,
+      timestamp: this.toLocalDateTimeString(new Date()),
+      readBy: [],
+      receivedBy: [],
+      attachment: null
+    };
+
+    this.stompClient.publish({
+      destination: `/app/chat.sendMessage/${conversationId}`,
+      body: JSON.stringify(messageObj),
+    });
+  }
+
+  sendAttachmentMessage(file: File, conversationId: string, contentType: MessageType): void {
+    if (!this.stompClient.connected) {
+      console.warn('STOMP is not connected');
+      return;
+    }
+
+    this.messageService.uploadFile(file, conversationId, contentType).subscribe({
+      next: (attachment: any) => {
         const messageObj: Message = {
           id: undefined,
           content: '',
           senderId: this.authService.getId()!,
-          conversationId: conversationId,
-          contentType: 'IMAGE',
+          conversationId,
+          contentType,
           timestamp: this.toLocalDateTimeString(new Date()),
           readBy: [],
           receivedBy: [],
           attachment
         };
 
-        console.log('Sending image message via STOMP:', messageObj);
+        console.log(`Sending ${contentType} message via STOMP:`, messageObj);
         this.stompClient.publish({
           destination: `/app/chat.sendMessage/${conversationId}`,
           body: JSON.stringify(messageObj),
         });
       },
-      error: (err) => console.error('Image upload failed:', err)
+      error: (err: any) => console.error(`${contentType} upload failed:`, err)
     });
   }
 
-  // Subscribe to real-time messages for a conversation
   subscribeToConversation(conversationId: string): void {
     if (!conversationId) {
       console.warn('Cannot subscribe: conversationId is null or undefined');
       return;
     }
 
-    // Avoid duplicate subscriptions
     if (this.subscriptions.has(conversationId)) {
       console.log(`Already subscribed to conversation: ${conversationId}`);
       return;
@@ -134,24 +129,20 @@ export class WebSocketService {
         `/conversation/${conversationId}`,
         (msg: StompMessage) => {
           const data = JSON.parse(msg.body);
-          console.log('Received real-time message:', data);
           this.messageSubject.next(data);
         }
       );
       this.subscriptions.set(conversationId, subscription);
-      console.log(`Subscribed to conversation: ${conversationId}`);
     } else {
       console.warn('STOMP is not connected, cannot subscribe');
     }
   }
 
-  // Unsubscribe from a conversation
   unsubscribeFromConversation(conversationId: string): void {
     const subscription = this.subscriptions.get(conversationId);
     if (subscription) {
       subscription.unsubscribe();
       this.subscriptions.delete(conversationId);
-      console.log(`Unsubscribed from conversation: ${conversationId}`);
     }
   }
 
@@ -165,10 +156,8 @@ export class WebSocketService {
 
   disconnect(): void {
     if (this.stompClient) {
-      // Unsubscribe from all conversations
-      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+      this.subscriptions.forEach((sub) => sub.unsubscribe());
       this.subscriptions.clear();
-
       this.stompClient.deactivate();
     }
   }

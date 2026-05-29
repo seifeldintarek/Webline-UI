@@ -1,7 +1,7 @@
 export interface AttachmentDto {
-  url: String;
-  fileName: String;
-  mimeType: String;
+  url: string;
+  fileName: string;
+  mimeType: string;
   fileSizeBytes: number;
-  durationMs: number;
+  durationMs?: number;
 }

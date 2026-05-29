@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
-import { Message } from '../models/message';
+import { Message, MessageType } from '../models/message';
+import { AttachmentDto } from '../models/attachment-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,12 @@ export class MessageService {
     });
   }
 
-  uploadImage(file: File, conversationId: string) {
+  uploadFile(file: File, conversationId: string, type: MessageType) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('conversationId', conversationId);
-    return this.http.post<any>(`http://localhost:5600/api/messages/upload`, formData, {
+    formData.append('type', type);
+    return this.http.post<AttachmentDto>(`http://localhost:5600/api/messages/upload`, formData, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
