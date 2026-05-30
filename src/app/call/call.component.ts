@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { UserService } from '../services/user.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '../environment/environment';
@@ -20,7 +21,7 @@ import { GroupService } from '../services/group-service.service';
   styleUrls: ['./call.component.scss'],
 })
 export class CallComponent implements OnInit, OnDestroy {
-  preCallPhase = true;        // shows pre-call screen until Zego inits
+  preCallPhase = true;
   remoteUserName = '';
   remoteUserAvatar = '';
   roomId = '';
@@ -28,9 +29,13 @@ export class CallComponent implements OnInit, OnDestroy {
   isLoading = false;
   error: string | null = null;
 
-
   private declineSub?: Subscription;
   private receiverIds: number[] = [];
+
+  // ── Zego session guards ──────────────────────────────────────────────────
+  private zp: any = null;         // holds the active Zego instance
+  private hasJoined = false;      // prevents double joinRoom
+  // ────────────────────────────────────────────────────────────────────────
 
   constructor(
     private route: ActivatedRoute,
@@ -45,17 +50,17 @@ export class CallComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
 
-    // Listen for decline while on pre-call screen
     this.declineSub = this.ws.callDeclined$.subscribe(decline => {
       if (decline.roomId === this.roomId) {
         this.navigateBack();
       }
     });
 
-    // roomId comes from query params when accepted from a notification (incoming call)
-    // otherwise this is an outgoing call and we resolve it from the route
-    this.route.queryParams.subscribe(params => {
+    // take(1) ensures queryParams fires exactly once,
+    // preventing multiple initZego() calls on the same component instance
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
       if (params['roomId']) {
+        // ── Incoming / accepted call ──
         this.roomId = params['roomId'];
         this.remoteUserName = params['callerName'] ?? '';
         this.remoteUserAvatar = params['callerAvatar'] ?? '';
@@ -64,6 +69,7 @@ export class CallComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.initZego();
       } else {
+        // ── Outgoing call ──
         this.resolveOutgoingCall();
       }
     });
@@ -73,6 +79,26 @@ export class CallComponent implements OnInit, OnDestroy {
     this.navigateBack();
   }
 
+  // Called by the "Confirm / Start Call" button on the pre-call screen
+  confirmCall(): void {
+    if (!this.roomId) {
+      this.error = 'Call setup is not ready yet.';
+      return;
+    }
+    this.preCallPhase = false;
+    this.initZego();
+  }
+
+  // Called by the "Cancel" button on the pre-call screen (before Zego starts)
+  cancelCall(): void {
+    const currentUser = this.auth.getUser();
+    this.receiverIds.forEach(id =>
+      this.ws.declineCall(id, this.roomId, currentUser.id!)
+    );
+    this.navigateBack();
+  }
+
+  // ── Private helpers ──────────────────────────────────────────────────────
 
   private resolveOutgoingCall(): void {
     const parentParams = this.route.snapshot.parent?.params ?? {};
@@ -93,7 +119,7 @@ export class CallComponent implements OnInit, OnDestroy {
               this.remoteUserName = user.fullName ?? '';
               this.remoteUserAvatar = user.image ?? '';
               this.isLoading = false;
-              this.preCallPhase = true;
+              this.preCallPhase = true;   // show pre-call screen; user clicks Confirm
 
               this.ws.initiateCall(userId, {
                 roomId: this.roomId,
@@ -124,7 +150,7 @@ export class CallComponent implements OnInit, OnDestroy {
           this.roomId = `conv-${conv.id}`;
           this.remoteUserName = conv.name ?? 'Group Call';
           this.isLoading = false;
-          this.preCallPhase = true;
+          this.preCallPhase = true;       // show pre-call screen; user clicks Confirm
 
           this.receiverIds = conv.participants?.filter(id => id !== currentUser.id) ?? [];
           this.receiverIds.forEach(participantId => {
@@ -152,37 +178,13 @@ export class CallComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmCall(): void {
-    if (!this.roomId) {
-      this.error = 'Call setup is not ready yet.';
-      return;
-    }
-    this.preCallPhase = false;
-    this.initZego();
-  }
-
-
-  cancelCall(): void {
-    const currentUser = this.auth.getUser();
-    this.receiverIds.forEach(id =>
-      this.ws.declineCall(id, this.roomId, currentUser.id!)
-    );
-    this.navigateBack();
-  }
-
   private initZego(): void {
     const tryInit = () => {
       const Zego = (window as any)['ZegoUIKitPrebuilt'];
-
-      console.log('Zego:', Zego);
-
       if (!Zego) {
         setTimeout(tryInit, 200);
         return;
       }
-
-      console.log('Available keys:', Object.keys(Zego));
-
       this.startZegoSession(Zego);
     };
 
@@ -190,6 +192,22 @@ export class CallComponent implements OnInit, OnDestroy {
   }
 
   private startZegoSession(Zego: any): void {
+    // Guard: if a session is already active, do nothing.
+    // This makes it safe even if initZego() is somehow triggered twice.
+    if (this.hasJoined) {
+      console.warn('Zego session already active — ignoring duplicate joinRoom.');
+      return;
+    }
+
+    // Destroy any lingering instance from a previous call attempt
+    // (e.g. user left and came back to the same component without a full destroy)
+    if (this.zp) {
+      try { this.zp.destroy(); } catch (_) { }
+      this.zp = null;
+    }
+
+    this.hasJoined = true;
+
     try {
       const currentUser = this.auth.getUser();
       const token = Zego.generateKitTokenForTest(
@@ -200,8 +218,8 @@ export class CallComponent implements OnInit, OnDestroy {
         currentUser.fullName,
       );
 
-      const zp = Zego.create(token);
-      zp.joinRoom({
+      this.zp = Zego.create(token);
+      this.zp.joinRoom({
         container: document.getElementById('zego-call-root'),
         scenario: {
           mode: this.callType === 'PRIVATE'
@@ -214,7 +232,11 @@ export class CallComponent implements OnInit, OnDestroy {
         showPreJoinView: false,
         onLeaveRoom: () => this.navigateBack(),
       });
+
     } catch (err) {
+      // Reset flag so a manual retry (e.g. clicking Confirm again) is allowed
+      this.hasJoined = false;
+      this.zp = null;
       console.error('Zego initialization failed:', err);
       this.error = 'Failed to start the call. Please try again.';
     }
@@ -226,5 +248,12 @@ export class CallComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.declineSub?.unsubscribe();
+
+    // Clean up Zego so re-entering the call route starts fresh
+    if (this.zp) {
+      try { this.zp.destroy(); } catch (_) { }
+      this.zp = null;
+    }
+    this.hasJoined = false;
   }
 }
