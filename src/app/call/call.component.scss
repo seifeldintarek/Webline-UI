@@ -1,87 +1,85 @@
+// call.component.scss
+
 .call-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0f1117;
+  background: #0d0d0d;
 }
 
-/* ── Zego container ─────────────────────────────────────────────────────── */
-#zego-call-root {
+.precall-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+
+  .precall-avatar-ring {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    padding: 6px;
+    animation: pulse-ring 1.8s ease-in-out infinite;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  .precall-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+  }
+
+  .precall-name {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .precall-actions {
+    margin-top: 16px;
+  }
+
+  .btn-cancel {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #c62828;
+    }
+  }
+}
+
+.zego-container {
   width: 100%;
   height: 100%;
+}
 
-  &.hidden {
-    display: none;
+@keyframes pulse-ring {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.15);
   }
-}
 
-/* ── Loading spinner ────────────────────────────────────────────────────── */
-.call-loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  color: #fff;
-}
-
-.call-loader__ring {
-  width: 52px;
-  height: 52px;
-  border: 4px solid rgba(255, 255, 255, 0.15);
-  border-top-color: #2563eb;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-}
-
-.call-loader__text {
-  font-size: 15px;
-  color: #9ca3af;
-  letter-spacing: 0.02em;
-}
-
-/* ── Error state ────────────────────────────────────────────────────────── */
-.call-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  color: #fff;
-  text-align: center;
-  padding: 32px;
-}
-
-.call-error__icon {
-  font-size: 52px;
-}
-
-.call-error__msg {
-  font-size: 15px;
-  color: #f87171;
-  max-width: 300px;
-  line-height: 1.5;
-}
-
-.call-error__btn {
-  margin-top: 8px;
-  padding: 10px 28px;
-  border: none;
-  border-radius: 999px;
-  background: #2563eb;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #1d4ed8;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  50% {
+    box-shadow: 0 0 0 18px rgba(255, 255, 255, 0);
   }
 }

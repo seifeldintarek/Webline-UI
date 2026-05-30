@@ -1,0 +1,19 @@
+<!-- call-notification.component.html -->
+
+<div *ngIf="incoming" class="notif-overlay">
+  <div class="notif-card">
+    <img [src]="incoming.callerAvatar || 'assets/default-avatar.png'" class="notif-avatar" />
+    <div class="notif-info">
+      <span class="notif-label">Incoming {{ incoming.callType === 'GROUP' ? 'Group ' : '' }}Video Call</span>
+      <strong class="notif-name">{{ incoming.callerName }}</strong>
+    </div>
+    <div class="notif-actions">
+      <button class="btn-accept" (click)="accept()">
+        <i class="pi pi-video"></i>
+      </button>
+      <button class="btn-decline" (click)="decline()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { Message, MessageType } from '../models/message';
 import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
 import SockJS from 'sockjs-client';
+import { IncomingCallPayload, CallDeclinePayload } from '../models/call-types';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,9 @@ export class WebSocketService {
   private messageSubject = new Subject<Message>();
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
   private subscriptions = new Map<string, any>();
+
+  incomingCall$ = new Subject<IncomingCallPayload>();
+  callDeclined$ = new Subject<CallDeclinePayload>();
 
   constructor(
     private authService: AuthService,
@@ -37,6 +41,7 @@ export class WebSocketService {
     this.stompClient.onConnect = () => {
       console.log('STOMP connected');
       this.connectionStatusSubject.next(true);
+      this.subscribeToCallEvents();   // no id needed
     };
 
     this.stompClient.onStompError = (frame: any) => {
@@ -51,6 +56,33 @@ export class WebSocketService {
     };
 
     this.stompClient.activate();
+  }
+
+
+  private subscribeToCallEvents(): void {
+    this.stompClient.subscribe('/user/queue/call', (message) => {
+      const payload: IncomingCallPayload = JSON.parse(message.body);
+      this.incomingCall$.next(payload);
+    });
+
+    this.stompClient.subscribe('/user/queue/call.decline', (message) => {
+      const payload: CallDeclinePayload = JSON.parse(message.body);
+      this.callDeclined$.next(payload);
+    });
+  }
+
+  initiateCall(receiverId: number, payload: IncomingCallPayload): void {
+    this.stompClient.publish({
+      destination: `/app/call.initiate`,
+      body: JSON.stringify({ ...payload, receiverId }),
+    });
+  }
+
+  declineCall(callerId: number, roomId: string, currentUserId: number): void {
+    this.stompClient.publish({
+      destination: `/app/call.decline`,
+      body: JSON.stringify({ roomId, declinedBy: currentUserId, callerId }),
+    });
   }
 
   private toLocalDateTimeString(date: Date): string {

@@ -12,6 +12,28 @@
     <button class="call-error__btn" (click)="leaveCall()">Go Back</button>
   </div>
 
-  <!-- Zego mounts here -->
-  <div id="zego-call-root" [class.hidden]="isLoading || !!error"></div>
+  <!-- Main call area (hidden during load/error) -->
+  <div class="call-inner" [class.hidden]="isLoading || !!error">
+
+    <!-- PRE-CALL PHASE -->
+    <div *ngIf="preCallPhase" class="precall-screen">
+      <div class="precall-avatar-ring">
+        <img [src]="remoteUserAvatar || 'assets/default-avatar.png'" alt="avatar" />
+      </div>
+      <p class="precall-label">Calling</p>
+      <h2 class="precall-name">{{ remoteUserName }}</h2>
+      <div class="precall-actions">
+        <button class="btn-start" (click)="confirmCall()">
+          <i class="pi pi-video"></i> Start
+        </button>
+        <button class="btn-cancel" (click)="cancelCall()">
+          <i class="pi pi-phone"></i> Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Zego mounts here (hidden during pre-call, visible once Zego initializes) -->
+    <div id="zego-call-root" [class.hidden]="preCallPhase"></div>
+
+  </div>
 </div>

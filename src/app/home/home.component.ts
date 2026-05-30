@@ -8,13 +8,14 @@ import { AuthService } from '../services/auth.service';
 import { RequestsComponent } from '../requests/requests.component';
 import { UpdateProfileComponent } from '../updateprofile/updateprofile.component';
 import { GroupsComponent } from '../groups/groups.component';
+import { CallNotificationComponent } from '../call-notifier/call-notifier.component';
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, SearchComponent, GroupsComponent, FriendshipComponent, RequestsComponent, ChatComponent, UpdateProfileComponent,
-    RouterOutlet, RouterLink, RouterLinkActive
+    RouterOutlet, RouterLink, RouterLinkActive, CallNotificationComponent
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']

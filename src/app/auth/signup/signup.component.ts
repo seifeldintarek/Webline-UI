@@ -43,7 +43,7 @@ export class SignupComponent implements OnInit {
         email: this.signupForm.value.email,
         mobilePhone: this.signupForm.value.mobilePhone,
         password: this.signupForm.value.password,
-        image: this.signupForm.value.image || ''
+        image: this.signupForm.value.image || '',
       };
       console.log('user image:', newUser.image);
       this.authService.signup(newUser).subscribe({

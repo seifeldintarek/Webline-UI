@@ -1,154 +1,230 @@
+// call.component.ts
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { WebSocketService } from '../services/web-socket.service';
+import { Subscription } from 'rxjs';
+import { UserService } from '../services/user.service';
+import { CommonModule } from '@angular/common';
+import { environment } from '../environment/environment';
+import { ConversationDTO, ConversationType } from "../models/conversation-model";
 import { FriendshipService } from '../services/friendship.service';
 import { GroupService } from '../services/group-service.service';
-import { ConversationType } from '../models/conversation-model';
-
-declare const ZegoUIKitPrebuilt: any;
 
 @Component({
   selector: 'app-call',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './call.component.html',
-  styleUrls: ['./call.component.scss']
+  styleUrls: ['./call.component.scss'],
 })
 export class CallComponent implements OnInit, OnDestroy {
-
-  isLoading = true;
+  preCallPhase = true;        // shows pre-call screen until Zego inits
+  remoteUserName = '';
+  remoteUserAvatar = '';
+  roomId = '';
+  callType: 'PRIVATE' | 'GROUP' = 'PRIVATE';
+  isLoading = false;
   error: string | null = null;
 
-  // ─── Zego credentials ────────────────────────────────────────────────────
-  private readonly APP_ID = 1470021379;
-  private readonly SERVER_SECRET = '5a8fb71ee6d7aaf30709b147b49cfb22';
 
-  // ─── Call config (resolved from route) ───────────────────────────────────
-  callType: 'private' | 'group' = 'private';
-  roomId = '';
-
-  private zp: any = null;
+  private declineSub?: Subscription;
+  private receiverIds: number[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService,
-    private friendshipService: FriendshipService,
-    private groupService: GroupService
+    private auth: AuthService,
+    private ws: WebSocketService,
+    private userService: UserService,
+    private friendService: FriendshipService,
+    private groupService: GroupService,
   ) { }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      // Route: /home/friends/chat/:userId/call  → private call
-      // Route: /home/groups/chat/:groupId/call  → group call
-      const userId = params['userId'] ? +params['userId'] : null;
-      const groupId = params['groupId'] ? +params['groupId'] : null;
+  ngOnInit(): void {
+    this.isLoading = true;
 
-      if (userId) {
-        this.callType = 'private';
-        this.loadPrivateRoom(userId);
-      } else if (groupId) {
-        this.callType = 'group';
-        this.loadGroupRoom(groupId);
+    // Listen for decline while on pre-call screen
+    this.declineSub = this.ws.callDeclined$.subscribe(decline => {
+      if (decline.roomId === this.roomId) {
+        this.navigateBack();
+      }
+    });
+
+    // roomId comes from query params when accepted from a notification (incoming call)
+    // otherwise this is an outgoing call and we resolve it from the route
+    this.route.queryParams.subscribe(params => {
+      if (params['roomId']) {
+        this.roomId = params['roomId'];
+        this.remoteUserName = params['callerName'] ?? '';
+        this.remoteUserAvatar = params['callerAvatar'] ?? '';
+        this.callType = params['callType'] ?? 'PRIVATE';
+        this.preCallPhase = false;
+        this.isLoading = false;
+        this.initZego();
       } else {
-        this.error = 'Invalid call parameters.';
-        this.isLoading = false;
+        this.resolveOutgoingCall();
       }
     });
   }
 
-  private loadPrivateRoom(friendId: number) {
-    this.friendshipService.getConverstaion([friendId], ConversationType.PRIVATE).subscribe({
-      next: (conv) => {
-        // Use the conversation ID as the room so the two participants always land in the same room
-        this.roomId = conv.id!;
-        this.initZego();
-      },
-      error: (err) => {
-        console.error('Error loading private conversation:', err);
-        this.error = 'Could not start call. Conversation not found.';
-        this.isLoading = false;
-      }
-    });
+  leaveCall(): void {
+    this.navigateBack();
   }
 
-  private loadGroupRoom(groupId: number) {
-    this.groupService.getGroupConversation(groupId).subscribe({
-      next: (conv) => {
-        this.roomId = conv.id!;
-        this.initZego();
-      },
-      error: (err) => {
-        console.error('Error loading group conversation:', err);
-        this.error = 'Could not start call. Group conversation not found.';
-        this.isLoading = false;
-      }
-    });
-  }
 
-  private initZego() {
-    const user = this.authService.getUser();
-    const userId = String(user?.id ?? Math.floor(Math.random() * 10000));
-    const userName = user?.fullName ?? user?.firstName ?? `User${userId}`;
+  private resolveOutgoingCall(): void {
+    const parentParams = this.route.snapshot.parent?.params ?? {};
+    const userId = parentParams['userId'] ? +parentParams['userId'] : null;
+    const groupId = parentParams['groupId'] ? +parentParams['groupId'] : null;
+    this.callType = userId ? 'PRIVATE' : 'GROUP';
 
-    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      this.APP_ID,
-      this.SERVER_SECRET,
-      this.roomId,
-      userId,
-      userName
-    );
+    const currentUser = this.auth.getUser();
 
-    this.zp = ZegoUIKitPrebuilt.create(kitToken);
+    if (userId) {
+      this.friendService.getConverstaion([userId], ConversationType.PRIVATE).subscribe({
+        next: (conv: ConversationDTO) => {
+          this.roomId = `conv-${conv.id}`;
+          this.receiverIds = [userId];
 
-    const container = document.querySelector('#zego-call-root') as HTMLElement;
-    if (!container) {
-      this.error = 'Call container not found.';
+          this.userService.getUserById(userId).subscribe({
+            next: (user) => {
+              this.remoteUserName = user.fullName ?? '';
+              this.remoteUserAvatar = user.image ?? '';
+              this.isLoading = false;
+              this.preCallPhase = true;
+
+              this.ws.initiateCall(userId, {
+                roomId: this.roomId,
+                callerId: currentUser.id!,
+                callerName: currentUser.fullName ?? '',
+                callerAvatar: currentUser.image ?? '',
+                conversationId: conv.id!,
+                callType: 'PRIVATE',
+              });
+            },
+            error: (err) => {
+              console.error('Failed to load remote user:', err);
+              this.error = 'Could not load user info.';
+              this.isLoading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Failed to load conversation:', err);
+          this.error = 'Could not start call.';
+          this.isLoading = false;
+        }
+      });
+
+    } else if (groupId) {
+      this.groupService.getGroupConversation(groupId).subscribe({
+        next: (conv: ConversationDTO) => {
+          this.roomId = `conv-${conv.id}`;
+          this.remoteUserName = conv.name ?? 'Group Call';
+          this.isLoading = false;
+          this.preCallPhase = true;
+
+          this.receiverIds = conv.participants?.filter(id => id !== currentUser.id) ?? [];
+          this.receiverIds.forEach(participantId => {
+            this.ws.initiateCall(participantId, {
+              roomId: this.roomId,
+              callerId: currentUser.id!,
+              callerName: currentUser.fullName ?? '',
+              callerAvatar: currentUser.image ?? '',
+              conversationId: conv.id!,
+              callType: 'GROUP',
+              groupId: groupId,
+            });
+          });
+        },
+        error: (err: any) => {
+          console.error('Failed to load group conversation:', err);
+          this.error = 'Could not start group call.';
+          this.isLoading = false;
+        }
+      });
+
+    } else {
+      this.error = 'Invalid call target.';
       this.isLoading = false;
+    }
+  }
+
+  confirmCall(): void {
+    if (!this.roomId) {
+      this.error = 'Call setup is not ready yet.';
       return;
     }
-
-    this.zp.joinRoom({
-      container,
-      sharedLinks: [{
-        name: 'Invite link',
-        url: `${window.location.protocol}//${window.location.host}${window.location.pathname}?roomID=${this.roomId}`
-      }],
-      scenario: {
-        mode: this.callType === 'group'
-          ? ZegoUIKitPrebuilt.VideoConference
-          : ZegoUIKitPrebuilt.OneONoneCall
-      },
-      turnOnMicrophoneWhenJoining: false,
-      turnOnCameraWhenJoining: false,
-      showMyCameraToggleButton: true,
-      showMyMicrophoneToggleButton: true,
-      showAudioVideoSettingsButton: true,
-      showScreenSharingButton: true,
-      showTextChat: false,
-      showUserList: true,
-      maxUsers: this.callType === 'group' ? 50 : 2,
-      layout: 'Auto',
-      showLayoutButton: false,
-      onLeaveRoom: () => {
-        this.router.navigate(['../'], { relativeTo: this.route });
-      }
-    });
-
-    this.isLoading = false;
+    this.preCallPhase = false;
+    this.initZego();
   }
 
-  leaveCall() {
-    if (this.zp) {
-      this.zp.destroy?.();
+
+  cancelCall(): void {
+    const currentUser = this.auth.getUser();
+    this.receiverIds.forEach(id =>
+      this.ws.declineCall(id, this.roomId, currentUser.id!)
+    );
+    this.navigateBack();
+  }
+
+  private initZego(): void {
+    const tryInit = () => {
+      const Zego = (window as any)['ZegoUIKitPrebuilt'];
+
+      console.log('Zego:', Zego);
+
+      if (!Zego) {
+        setTimeout(tryInit, 200);
+        return;
+      }
+
+      console.log('Available keys:', Object.keys(Zego));
+
+      this.startZegoSession(Zego);
+    };
+
+    tryInit();
+  }
+
+  private startZegoSession(Zego: any): void {
+    try {
+      const currentUser = this.auth.getUser();
+      const token = Zego.generateKitTokenForTest(
+        environment.zego.appId,
+        environment.zego.serverSecret,
+        this.roomId,
+        String(currentUser.id),
+        currentUser.fullName,
+      );
+
+      const zp = Zego.create(token);
+      zp.joinRoom({
+        container: document.getElementById('zego-call-root'),
+        scenario: {
+          mode: this.callType === 'PRIVATE'
+            ? Zego.OneONoneCall
+            : Zego.VideoConference,
+          config: { maxUsers: this.callType === 'PRIVATE' ? 2 : 50 },
+        },
+        turnOnMicrophoneWhenJoining: false,
+        turnOnCameraWhenJoining: false,
+        showPreJoinView: false,
+        onLeaveRoom: () => this.navigateBack(),
+      });
+    } catch (err) {
+      console.error('Zego initialization failed:', err);
+      this.error = 'Failed to start the call. Please try again.';
     }
+  }
+
+  private navigateBack(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
-  ngOnDestroy() {
-    if (this.zp) {
-      this.zp.destroy?.();
-    }
+  ngOnDestroy(): void {
+    this.declineSub?.unsubscribe();
   }
 }

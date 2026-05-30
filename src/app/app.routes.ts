@@ -10,6 +10,7 @@ import { AuthGuard } from './auth/auth/auth.guard';
 import { ChatComponent } from './chat/chat.component';
 import { GroupsComponent } from './groups/groups.component';
 import { GroupChatComponent } from './group-chat/group-chat.component';
+import { CallComponent } from './call/call.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,7 +23,12 @@ export const routes: Routes = [
       {
         path: 'groups', component: GroupsComponent,
         children: [
-          { path: 'chat/:groupId', component: GroupChatComponent }
+          {
+            path: 'chat/:groupId', component: GroupChatComponent,
+            children: [
+              { path: 'call', component: CallComponent }   // group video call
+            ]
+          }
         ]
       },
       { path: '', redirectTo: 'search', pathMatch: 'full' },
@@ -30,7 +36,12 @@ export const routes: Routes = [
       {
         path: 'friends', component: FriendshipComponent,
         children: [
-          { path: 'chat/:userId', component: ChatComponent }
+          {
+            path: 'chat/:userId', component: ChatComponent,
+            children: [
+              { path: 'call', component: CallComponent }   // private video call
+            ]
+          }
         ]
       },
       { path: 'requests', component: RequestsComponent },

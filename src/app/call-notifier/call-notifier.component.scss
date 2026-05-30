@@ -1,0 +1,92 @@
+// call-notification.component.scss
+
+.notif-overlay {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  animation: slide-in 0.3s ease;
+}
+
+.notif-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+}
+
+.notif-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.notif-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .notif-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .notif-name {
+    font-size: 16px;
+    color: #fff;
+  }
+}
+
+.notif-actions {
+  display: flex;
+  gap: 10px;
+
+  button {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, filter 0.15s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .btn-accept {
+    background: #22c55e;
+    color: #fff;
+  }
+
+  .btn-decline {
+    background: #ef4444;
+    color: #fff;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
