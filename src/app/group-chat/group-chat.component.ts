@@ -1,25 +1,23 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { WebSocketService } from '../services/web-socket.service';
 import { MessageService } from '../services/message.service';
 import { AuthService } from '../services/auth.service';
-import { FriendshipService } from '../services/friendship.service';
 import { GroupService } from '../services/group-service.service';
-import { GroupMemberService } from '../services/group-member.service';
 
 import { Message, MessageType } from '../models/message';
 import { GroupModel } from '../models/group-model';
 import { GroupMemberModel } from '../models/group-member-model';
-import { ConversationDTO, ConversationType } from '../models/conversation-model';
+import { ConversationDTO } from '../models/conversation-model';
 
 @Component({
   selector: 'app-group-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterOutlet],
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss'],
 })
@@ -51,9 +49,7 @@ export class GroupChatComponent implements OnInit, OnDestroy {
     private webSocketService: WebSocketService,
     private messageService: MessageService,
     private authService: AuthService,
-    private friendshipService: FriendshipService,
     private groupService: GroupService,
-    private groupMemberService: GroupMemberService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -108,11 +104,17 @@ export class GroupChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadMembers(groupId: number) {
-    this.groupService.getMembers(groupId).subscribe({
+
+  private loadMembers(groupId: number, page: number = 1) {
+    this.groupService.getMembers(groupId, page).subscribe({
       next: (data) => {
-        this.members = data.content;
-        this.loadConversation(groupId);
+        this.members = [...this.members, ...data.content];
+        if (data.content.length === 10) {
+          // there may be more pages
+          this.loadMembers(groupId, page + 1);
+        } else {
+          this.loadConversation(groupId);
+        }
       },
       error: (err) => console.error('Error loading members:', err),
     });
@@ -147,6 +149,14 @@ export class GroupChatComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
     });
+  }
+
+  startCall() {
+    if (!this.conversation) {
+      console.warn('Conversation not ready yet');
+      return;
+    }
+    this.router.navigate(['call'], { relativeTo: this.route });
   }
 
   sendMessage() {

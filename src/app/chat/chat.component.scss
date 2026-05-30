@@ -10,9 +10,22 @@
 .chat-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 15px;
   background: #fff;
   border-bottom: 1px solid #e0e0e0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .avatar {
@@ -41,6 +54,33 @@
 
 .online-dot.online {
   background: #4caf50;
+}
+
+.call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #e8f0fe;
+  color: #0084ff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+
+  &:hover {
+    background: #0084ff;
+    color: #fff;
+    transform: scale(1.08);
+  }
+
+  &:disabled {
+    background: #f0f0f0;
+    color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
 }
 
 .messages-container {
@@ -115,7 +155,7 @@
   }
 }
 
-/* ── Attach image button ───────────────────────────────────────────── */
+/* ── Attach button ───────────────────────────────────────────────────────── */
 .attach-button {
   display: flex;
   align-items: center;
@@ -141,7 +181,7 @@
   }
 }
 
-/* ── Image preview strip (above the input bar) ─────────────────────── */
+/* ── Image preview strip ─────────────────────────────────────────────────── */
 .image-preview-strip {
   display: flex;
   align-items: center;
@@ -195,7 +235,55 @@
   max-width: 200px;
 }
 
-/* ── Image inside a message bubble ─────────────────────────────────── */
+/* ── File preview strip ──────────────────────────────────────────────────── */
+.file-preview-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.file-preview-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.file-preview-name {
+  flex: 1;
+  font-size: 13px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-preview-size {
+  font-size: 12px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.remove-file-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
+/* ── Image inside message bubble ─────────────────────────────────────────── */
 .message-image {
   display: block;
   max-width: 240px;
@@ -212,4 +300,56 @@
 
 .message.received .message-bubble .message-image {
   border: 1px solid #d0d0e0;
+}
+
+/* ── File attachment card ─────────────────────────────────────────────────── */
+.file-attachment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: inherit;
+  min-width: 180px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.message.sent .message-bubble .file-attachment {
+  background: rgba(255, 255, 255, 0.15);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.file-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
 }

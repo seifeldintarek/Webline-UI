@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { UserModel } from '../models/user-model';
 import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs';
@@ -16,7 +16,7 @@ import { UserService } from '../services/user.service';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, ButtonModule, FormsModule],
+  imports: [CommonModule, ButtonModule, FormsModule, RouterOutlet],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
@@ -181,6 +181,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messageSubscription?.unsubscribe();
     this.connectionSubscription?.unsubscribe();
     this.routeSubscription?.unsubscribe();
+  }
+
+  startCall() {
+    this.router.navigate(['call'], { relativeTo: this.route });
   }
 
   sendMessage() {

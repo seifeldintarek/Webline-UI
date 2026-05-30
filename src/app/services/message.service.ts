@@ -8,6 +8,9 @@ import { AttachmentDto } from '../models/attachment-dto';
   providedIn: 'root'
 })
 export class MessageService {
+  getConversation(targetId: any, callType: string) {
+    throw new Error('Method not implemented.');
+  }
 
   constructor(private authService: AuthService,
     private http: HttpClient

@@ -11,6 +11,14 @@
         </div>
       </div>
     </div>
+    <div class="header-right">
+      <button class="call-btn" (click)="startCall()" title="Start video call">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <polygon points="23 7 16 12 23 17 23 7"></polygon>
+          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Connection Status -->
@@ -66,12 +74,12 @@
     </div>
   </div>
 
-  <!-- Typing Indicator -->
+  <!-- Typing Indicator
   <div *ngIf="typing" class="typing-indicator received">
     <div class="typing-bubble">
       <span>Typing...</span>
     </div>
-  </div>
+  </div> -->
 
   <!-- Image Preview Strip -->
   <div *ngIf="imagePreviewUrl" class="image-preview-strip">
@@ -102,11 +110,9 @@
 
   <!-- Input Area -->
   <div class="chat-input">
-    <!-- Single hidden input for all attachment types -->
     <input #attachmentInput type="file" accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="display: none"
       (change)="onAttachmentSelected($event)" />
 
-    <!-- Single attach button -->
     <button class="attach-button" (click)="triggerAttachmentInput(attachmentInput)" [disabled]="!isConnected"
       title="Attach image or file">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
@@ -123,4 +129,6 @@
       Send
     </button>
   </div>
+
+  <router-outlet></router-outlet>
 </div>
