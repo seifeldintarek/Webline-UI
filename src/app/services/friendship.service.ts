@@ -8,13 +8,14 @@ import {
   ConversationDTO,
   ConversationType,
 } from '../models/conversation-model';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FriendshipService {
-  private apiUrl = 'http://localhost:5500/api/users';
-  private convUrl = 'http://localhost:5600/api/conversation';
+  private apiUrl = environment.userServiceUrl;
+  private convUrl = `${environment.messageServiceUrl}/conversation`;
   private pageParam = '&size=10&sort=id,asc';
   private friends: UserModel[] = [];
 

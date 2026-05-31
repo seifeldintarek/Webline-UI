@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { UserService } from '../services/user.service';
 import { CommonModule } from '@angular/common';
-import { environment } from '../environment/environment';
+import { environment } from '../environments/environment';
 import { ConversationDTO, ConversationType } from "../models/conversation-model";
 import { FriendshipService } from '../services/friendship.service';
 import { GroupService } from '../services/group-service.service';

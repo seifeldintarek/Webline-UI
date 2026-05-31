@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Message, MessageType } from '../models/message';
 import { AttachmentDto } from '../models/attachment-dto';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class MessageService {
   ) { }
 
   getMessages(conversationId: string) {
-    return this.http.get<Message[]>(`http://localhost:5600/api/messages/${conversationId}`, {
+    return this.http.get<Message[]>(`${environment.messageServiceUrl}/messages/${conversationId}`, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
@@ -27,19 +28,19 @@ export class MessageService {
     formData.append('file', file);
     formData.append('conversationId', conversationId);
     formData.append('type', type);
-    return this.http.post<AttachmentDto>(`http://localhost:5600/api/messages/upload`, formData, {
+    return this.http.post<AttachmentDto>(`${environment.messageServiceUrl}/messages/upload`, formData, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
 
   deleteMessages(conversationId: string) {
-    return this.http.delete<void>(`http://localhost:5600/api/messages/${conversationId}`, {
+    return this.http.delete<void>(`${environment.messageServiceUrl}/messages/${conversationId}`, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }
 
   deleteConversation(conversationId: string) {
-    return this.http.delete<void>(`http://localhost:5600/api/conversation/${conversationId}`, {
+    return this.http.delete<void>(`${environment.messageServiceUrl}/conversation/${conversationId}`, {
       headers: { Authorization: `Bearer ${this.authService.getToken()}` }
     });
   }

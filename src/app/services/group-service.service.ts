@@ -7,6 +7,7 @@ import { GroupMemberModel } from '../models/group-member-model';
 import { PageResponse } from '../models/page-response';
 import { UserModel } from '../models/user-model';
 import { ConversationDTO, ConversationType } from '../models/conversation-model';
+import { environment } from '../environments/environment';
 
 export interface GroupDTO {
   id?: number | null;
@@ -21,10 +22,10 @@ export interface GroupDTO {
 })
 export class GroupService {
 
-  private readonly baseUrl = 'http://localhost:5500/api/users/group';
-  private readonly userBaseUrl = 'http://localhost:5500/api/users';
-  private convUrl = 'http://localhost:5600/api/conversation';
-  private msgBase = 'http://localhost:5600/api/messages';
+  private readonly baseUrl = `${environment.userServiceUrl}/group`;
+  private readonly userBaseUrl = environment.userServiceUrl;
+  private convUrl = `${environment.messageServiceUrl}/conversation`;
+  private msgBase = `${environment.messageServiceUrl}/messages`;
 
 
   constructor(

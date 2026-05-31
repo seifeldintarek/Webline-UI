@@ -3,14 +3,15 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { GroupMemberModel, GroupMemberDTO } from '../models/group-member-model';
 import { PageResponse } from '../models/page-response';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupMemberService {
 
-  private readonly baseUrl = 'http://localhost:5500/api/users/groupMember';
-  private readonly groupUrl = 'http://localhost:5500/api/users/group';
+  private readonly baseUrl = `${environment.userServiceUrl}/groupMember`;
+  private readonly groupUrl = `${environment.userServiceUrl}/group`;
 
 
   constructor(

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
 import SockJS from 'sockjs-client';
 import { IncomingCallPayload, CallDeclinePayload } from '../models/call-types';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class WebSocketService {
 
   connect(): void {
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:5600/api/ws'),
+      webSocketFactory: () => new SockJS(`${environment.messageServiceUrl}/ws`),
       reconnectDelay: 500,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,

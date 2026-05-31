@@ -4,6 +4,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { UserModel } from '../models/user-model';
 import { PageResponse } from '../models/page-response';
 import { AuthService } from './auth.service';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class SearchService {
     private authService: AuthService
   ) { }
 
-  private readonly searchUrl = "http://localhost:5500/api/users/user/search?page=";
+  private readonly searchUrl = `${environment.userServiceUrl}/user/search?page=`;
 
   private pageSize = "&size=10";
   private sortBy = "&sort=id,asc";
