@@ -38,10 +38,6 @@
         </div>
       </div>
       <div class="gc-header-right">
-        <div class="gc-conn-pill" [class.online]="isConnected">
-          <span class="gc-conn-dot"></span>
-          {{ isConnected ? 'Connected' : 'Connecting…' }}
-        </div>
 
         <!-- Video call button -->
         <button class="gc-call-btn" (click)="startCall()" title="Start group video call">
@@ -62,16 +58,6 @@
         </button>
       </div>
     </header>
-
-    <!-- Offline banner -->
-    <div *ngIf="!isConnected" class="gc-offline-banner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="gc-warn-icon">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="12" y1="16" x2="12.01" y2="16" />
-      </svg>
-      Connecting to server — messages are paused
-    </div>
 
     <!-- Loading skeleton -->
     <div *ngIf="isLoading" class="gc-loading">
@@ -96,11 +82,11 @@
         </div>
 
         <div class="gc-msg-body">
-          <!-- Sender name (for others) -->
           <span *ngIf="msg.senderId !== currentId" class="gc-sender-name">
             {{ getMemberName(msg.senderId) }}
           </span>
           <div class="gc-bubble">
+
             <!-- Image attachment -->
             <ng-container *ngIf="msg.contentType === MessageType.IMAGE && msg.attachment">
               <img class="gc-msg-image" [src]="msg.attachment.url" [alt]="msg.attachment.fileName"
@@ -159,7 +145,7 @@
 
     <!-- Input bar -->
     <div class="gc-input-bar">
-      <input #attachmentInput type="file" accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="display: none"
+      <input #attachmentInput type="file" accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar" style="display:none"
         (change)="onAttachmentSelected($event)" />
 
       <button class="gc-attach-btn" (click)="triggerAttachmentInput(attachmentInput)" [disabled]="!isConnected"
@@ -173,6 +159,7 @@
 
       <input class="gc-input" type="text" [placeholder]="inputPlaceholder" [(ngModel)]="newMessage"
         (keyup.enter)="sendMessage()" [disabled]="!isConnected" />
+
       <button class="gc-send-btn" (click)="sendMessage()" [disabled]="!canSend">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="22" y1="2" x2="11" y2="13" />

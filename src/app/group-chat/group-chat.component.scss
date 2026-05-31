@@ -1,29 +1,53 @@
+// ── Design Tokens ─────────────────────────────────────────────────────────────
+$bg-primary: #0f1117;
+$bg-secondary: #161b27;
+$bg-card: #1c2333;
+$bg-hover: #232b3e;
+$border-color: rgba(255, 255, 255, 0.07);
+$accent-blue: #4f8ef7;
+$accent-warn: #f59e0b;
+$accent-danger: #f43f5e;
+$text-primary: #e8eaf0;
+$text-secondary: #8892a4;
+$text-muted: #5a6478;
+$avatar-bg: #2a3550;
+$bubble-sent: #2a4a8a;
+$bubble-recv: #1c2333;
+$radius-pill: 999px;
+$transition: 0.18s ease;
+
+// ── Shell ─────────────────────────────────────────────────────────────────────
 .gc-shell {
   height: 100%;
   display: flex;
   flex-direction: row;
-  background: #f8fafc;
-  position: relative;
+  background: $bg-primary;
   overflow: hidden;
+  position: relative;
   isolation: isolate;
+  font-family: 'Segoe UI', 'Inter', sans-serif;
 }
 
+// ── Main chat column ──────────────────────────────────────────────────────────
 .gc-chat {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-width: 0;
+  background: $bg-primary;
 }
 
+// ── Header ────────────────────────────────────────────────────────────────────
 .gc-header {
-  height: 74px;
-  padding: 14px 18px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 12px 18px;
+  background: $bg-card;
+  border-bottom: 1px solid $border-color;
+  flex-shrink: 0;
+  min-height: 66px;
 }
 
 .gc-header-left {
@@ -33,165 +57,195 @@
 }
 
 .gc-group-icon {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: $avatar-bg;
+  color: $text-primary;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
+  font-size: 17px;
   overflow: hidden;
-}
+  border: 2px solid $border-color;
+  flex-shrink: 0;
 
-.gc-group-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .gc-group-name {
   margin: 0;
-  font-size: 18px;
-  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.2;
 }
 
 .gc-group-sub {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 12px;
+  color: $text-secondary;
+  margin-top: 1px;
+  display: block;
 }
 
 .gc-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.gc-conn-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fee2e2;
-  color: #991b1b;
-  padding: 7px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.gc-conn-pill.online {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.gc-conn-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.gc-members-toggle,
-.gc-send-btn {
-  border: none;
-  cursor: pointer;
-}
-
-.gc-members-toggle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  color: #374151;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gc-members-toggle.active {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.gc-members-toggle svg {
-  width: 21px;
-  height: 21px;
-}
-
-/* ── Video call button ───────────────────────────────────────────────────── */
+// ── Video call button ─────────────────────────────────────────────────────────
 .gc-call-btn {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
-  background: #e8f0fe;
-  color: #2563eb;
+  background: rgba($accent-blue, 0.12);
+  color: $accent-blue;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
+  transition: background $transition, transform $transition;
   flex-shrink: 0;
 
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
   &:hover {
-    background: #2563eb;
+    background: $accent-blue;
     color: #fff;
     transform: scale(1.08);
   }
 
   &:disabled {
-    background: #f3f4f6;
-    color: #d1d5db;
+    background: $bg-hover;
+    color: $text-muted;
     cursor: not-allowed;
     transform: none;
   }
+}
+
+// ── Members toggle button ─────────────────────────────────────────────────────
+.gc-members-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: $bg-hover;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background $transition, color $transition;
 
   svg {
     width: 20px;
     height: 20px;
   }
+
+  &:hover {
+    background: rgba($accent-blue, 0.15);
+    color: $accent-blue;
+  }
+
+  &.active {
+    background: rgba($accent-blue, 0.2);
+    color: $accent-blue;
+  }
 }
 
-.gc-offline-banner {
-  background: #fff7ed;
-  color: #9a3412;
-  padding: 10px 14px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.gc-warn-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.gc-messages {
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+.gc-loading {
   flex: 1;
-  overflow-y: auto;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+.gc-skeleton {
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, $bg-card 25%, $bg-hover 50%, $bg-card 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  &:nth-child(odd) {
+    width: 72%;
+  }
+
+  &:nth-child(even) {
+    width: 55%;
+    align-self: flex-end;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ── Messages area ─────────────────────────────────────────────────────────────
+.gc-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: $bg-primary;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $bg-hover;
+    border-radius: 4px;
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
 .gc-empty {
   margin: auto;
   text-align: center;
-  color: #6b7280;
+  color: $text-muted;
+
+  p {
+    font-size: 14px;
+    color: $text-secondary;
+  }
 }
 
 .gc-empty-icon {
-  font-size: 42px;
+  font-size: 40px;
   margin-bottom: 10px;
+  opacity: 0.5;
 }
 
+// ── Message rows ──────────────────────────────────────────────────────────────
 .gc-msg-row {
   display: flex;
   gap: 10px;
-  max-width: 85%;
+  max-width: 82%;
 }
 
 .gc-msg-mine {
@@ -203,64 +257,68 @@
   align-self: flex-start;
 }
 
+// ── Avatar (others) ───────────────────────────────────────────────────────────
 .gc-msg-avatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #d1d5db;
-  color: #111827;
+  background: $avatar-bg;
+  color: $text-primary;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   position: relative;
   background-size: cover;
   background-position: center;
   flex-shrink: 0;
+  border: 1px solid $border-color;
 }
 
 .gc-admin-badge {
   position: absolute;
   right: -4px;
   bottom: -4px;
-  background: #f59e0b;
-  color: white;
+  background: $accent-warn;
+  color: #fff;
   border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  font-size: 10px;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+// ── Message body ──────────────────────────────────────────────────────────────
 .gc-msg-body {
   display: flex;
   flex-direction: column;
 }
 
 .gc-sender-name {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11px;
+  color: $text-muted;
   margin-bottom: 4px;
+  padding-left: 2px;
 }
 
+// ── Bubbles ───────────────────────────────────────────────────────────────────
 .gc-bubble {
-  padding: 10px 12px;
+  padding: 10px 13px;
   border-radius: 16px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  color: #111827;
+  background: $bubble-recv;
+  border: 1px solid $border-color;
+  color: $text-primary;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .gc-msg-mine .gc-bubble {
-  background: #2563eb;
-  color: white;
-  border-color: #2563eb;
+  background: $bubble-sent;
+  border-color: rgba($accent-blue, 0.3);
   border-bottom-right-radius: 4px;
 }
 
@@ -270,191 +328,61 @@
 
 .gc-bubble-text {
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.45;
+  color: $text-primary;
 }
 
 .gc-bubble-time {
-  font-size: 11px;
-  opacity: 0.75;
+  font-size: 10px;
+  color: $text-muted;
   align-self: flex-end;
 }
 
-.gc-input-bar {
-  padding: 12px 14px;
-  background: #fff;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.gc-msg-mine .gc-bubble-time {
+  color: rgba($text-secondary, 0.7);
 }
 
-.gc-attach-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: #f3f4f6;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-
-.gc-attach-btn:hover:not(:disabled) {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.gc-attach-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.gc-input {
-  flex: 1;
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  padding: 11px 16px;
-  outline: none;
-  font-size: 14px;
-  transition: border-color 0.15s;
-}
-
-.gc-input:focus {
-  border-color: #2563eb;
-}
-
-.gc-send-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: #2563eb;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.gc-send-btn:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-.gc-send-btn:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.gc-send-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-/* ── Attachment preview strips ────────────────────────────────────────────── */
-.gc-preview-strip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
-}
-
-.gc-preview-wrapper {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.gc-preview-thumb {
-  width: 52px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  display: block;
-}
-
-.gc-preview-name {
-  flex: 1;
-  font-size: 13px;
-  color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gc-preview-size {
-  font-size: 12px;
-  color: #9ca3af;
-  flex-shrink: 0;
-}
-
-.gc-remove-btn {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: none;
-  background: #ef4444;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  padding: 0;
-}
-
-.gc-remove-btn:hover {
-  background: #dc2626;
-}
-
-/* ── Image messages ──────────────────────────────────────────────────────── */
+// ── Image in bubble ───────────────────────────────────────────────────────────
 .gc-msg-image {
   max-width: 240px;
   max-height: 200px;
   border-radius: 10px;
   object-fit: cover;
   display: block;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  cursor: zoom-in;
+  border: 1px solid $border-color;
+  transition: opacity $transition;
+
+  &:hover {
+    opacity: 0.88;
+  }
 }
 
-.gc-msg-image:hover {
-  opacity: 0.9;
-}
-
-/* ── File attachment card ────────────────────────────────────────────────── */
+// ── File attachment card ──────────────────────────────────────────────────────
 .gc-file-attachment {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.06);
   text-decoration: none;
-  color: inherit;
+  color: $text-primary;
   min-width: 200px;
-  transition: background 0.15s;
-}
+  border: 1px solid $border-color;
+  transition: background $transition;
 
-.gc-file-attachment:hover {
-  background: rgba(0, 0, 0, 0.1);
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .gc-msg-mine .gc-file-attachment {
-  background: rgba(255, 255, 255, 0.15);
-}
+  background: rgba(255, 255, 255, 0.1);
 
-.gc-msg-mine .gc-file-attachment:hover {
-  background: rgba(255, 255, 255, 0.25);
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
 }
 
 .gc-file-icon {
@@ -475,105 +403,306 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: $text-primary;
 }
 
 .gc-file-size {
   font-size: 11px;
-  opacity: 0.7;
+  color: $text-muted;
   margin-top: 2px;
 }
 
-/* ── Members panel ───────────────────────────────────────────────────────── */
+// ── Attachment preview strips ─────────────────────────────────────────────────
+.gc-preview-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: $bg-card;
+  border-top: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+.gc-preview-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gc-preview-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  display: block;
+}
+
+.gc-preview-name {
+  flex: 1;
+  font-size: 13px;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gc-preview-size {
+  font-size: 12px;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+.gc-remove-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: $accent-danger;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  padding: 0;
+
+  &:hover {
+    background: darken(#f43f5e, 8%);
+  }
+}
+
+// ── Input bar ─────────────────────────────────────────────────────────────────
+.gc-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: $bg-card;
+  border-top: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+.gc-attach-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: $text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background $transition, color $transition;
+
+  &:hover:not(:disabled) {
+    background: rgba($accent-blue, 0.15);
+    color: $accent-blue;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.gc-input {
+  flex: 1;
+  border: 1px solid $border-color;
+  border-radius: $radius-pill;
+  padding: 10px 16px;
+  background: $bg-secondary;
+  color: $text-primary;
+  font-size: 14px;
+  outline: none;
+  transition: border-color $transition, box-shadow $transition;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+
+  &:focus {
+    border-color: rgba($accent-blue, 0.5);
+    box-shadow: 0 0 0 3px rgba($accent-blue, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.gc-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: $accent-blue;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background $transition, transform $transition;
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  &:hover:not(:disabled) {
+    background: lighten(#4f8ef7, 8%);
+    transform: scale(1.06);
+  }
+
+  &:disabled {
+    background: $bg-hover;
+    color: $text-muted;
+    cursor: not-allowed;
+  }
+}
+
+// ── Members sidebar ───────────────────────────────────────────────────────────
 .gc-members-panel {
   width: 0;
   overflow: hidden;
-  background: #fff;
-  border-left: 1px solid #e5e7eb;
+  background: $bg-card;
+  border-left: 1px solid $border-color;
   transition: width 0.25s ease;
   order: 2;
-}
+  flex-shrink: 0;
 
-.gc-members-panel.open {
-  width: 260px;
+  &.open {
+    width: 250px;
+  }
 }
 
 .gc-members-header {
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid $border-color;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-weight: 700;
+  font-size: 14px;
+  color: $text-primary;
+}
+
+.gc-members-title {
+  color: $text-primary;
 }
 
 .gc-members-count {
-  background: #e0f2fe;
-  color: #0369a1;
-  border-radius: 999px;
-  padding: 2px 8px;
+  background: rgba($accent-blue, 0.15);
+  color: $accent-blue;
+  border-radius: $radius-pill;
+  padding: 2px 9px;
   font-size: 12px;
+  font-weight: 600;
 }
 
 .gc-members-list {
   list-style: none;
   padding: 8px;
   margin: 0;
+  overflow-y: auto;
+  max-height: calc(100% - 56px);
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $bg-hover;
+    border-radius: 4px;
+  }
 }
 
 .gc-member-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 6px;
+  padding: 10px 8px;
   border-radius: 10px;
-}
+  transition: background $transition;
 
-.gc-member-row:hover {
-  background: #f3f4f6;
+  &:hover {
+    background: $bg-hover;
+  }
 }
 
 .gc-member-avatar.sm {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: #d1d5db;
+  background: $avatar-bg;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
+  color: $text-primary;
   background-size: cover;
   background-position: center;
+  flex-shrink: 0;
+  border: 1px solid $border-color;
 }
 
 .gc-member-meta {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .gc-member-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gc-member-role {
   font-size: 11px;
-  color: #6b7280;
+  color: $text-muted;
+  margin-top: 1px;
 }
 
 .gc-member-role.admin {
-  color: #d97706;
+  color: $accent-warn;
   font-weight: 700;
 }
 
-.gc-loading {
-  flex: 1;
-  padding: 18px;
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .gc-members-panel.open {
+    width: 200px;
+  }
+
+  .gc-msg-row {
+    max-width: 90%;
+  }
 }
 
-.gc-skeleton {
-  height: 42px;
-  width: 75%;
-  background: #e5e7eb;
-  border-radius: 14px;
-  margin-bottom: 12px;
+@media (max-width: 480px) {
+  .gc-header {
+    padding: 10px 12px;
+  }
+
+  .gc-input-bar {
+    padding: 10px 10px;
+  }
+
+  .gc-messages {
+    padding: 12px 10px;
+  }
 }
