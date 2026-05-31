@@ -16,6 +16,8 @@ export class UpdateProfileComponent implements OnInit {
 
   profileForm!: FormGroup;
   image: string = '';
+  showPassword: boolean = false;
+  showConfirm: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -45,6 +47,23 @@ export class UpdateProfileComponent implements OnInit {
       form.get('confirmPassword')?.setErrors(null);
     }
     return null;
+  }
+
+  getPasswordStrength(): number {
+    const val: string = this.profileForm.get('password')?.value || '';
+    let score = 0;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+    return score;
+  }
+
+  getPasswordStrengthLabel(): string {
+    const s = this.getPasswordStrength();
+    if (s === 1) return 'Weak';
+    if (s === 2) return 'Medium';
+    if (s >= 3) return 'Strong';
+    return '';
   }
 
   onSubmit() {

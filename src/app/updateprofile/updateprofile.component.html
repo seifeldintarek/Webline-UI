@@ -1,72 +1,170 @@
-<div class="update-profile-container">
-  <h2>Update Profile</h2>
+<div class="up-page">
+  <div class="up-card">
 
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-
-    <!-- First Name -->
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input type="text" id="firstName" formControlName="firstName" class="form-control" />
-      <small *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="text-danger">
-        First name is required.
-      </small>
+    <!-- ── Header ── -->
+    <div class="up-header">
+      <p class="up-header__eyebrow">Account Settings</p>
+      <h1 class="up-header__title">Update Profile</h1>
+      <p class="up-header__subtitle">Keep your information accurate and up to date.</p>
     </div>
 
-    <!-- Last Name -->
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input type="text" id="lastName" formControlName="lastName" class="form-control" />
-      <small *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="text-danger">
-        Last name is required.
-      </small>
-    </div>
+    <!-- ── Body ── -->
+    <div class="up-body">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 
-    <!-- Email -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" formControlName="email" class="form-control" />
-      <small *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-danger">
-        Enter a valid email.
-      </small>
-    </div>
+        <!-- ── Avatar Section ── -->
+        <section class="up-section">
+          <p class="up-section-label">Profile Photo</p>
 
-    <!-- Mobile Phone -->
-    <div class="form-group">
-      <label for="mobilePhone">Mobile Phone</label>
-      <input type="text" id="mobilePhone" formControlName="mobilePhone" class="form-control" />
-      <small *ngIf="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched"
-        class="text-danger">
-        Enter a valid Egyptian mobile number.
-      </small>
-    </div>
+          <div class="up-avatar-zone">
+            <div class="up-avatar-preview">
+              <span class="up-avatar-initials" *ngIf="!image">
+                {{ profileForm.get('firstName')?.value?.charAt(0)?.toUpperCase() || '?' }}
+              </span>
+              <img *ngIf="image" [src]="image" alt="Profile preview" />
+            </div>
 
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" formControlName="password" class="form-control" />
-      <small *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched" class="text-danger">
-        Password must be at least 10 characters.
-      </small>
-    </div>
+            <div class="up-avatar-actions">
+              <label class="up-file-btn" for="imageUpload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Choose photo
+              </label>
+              <input id="imageUpload" type="file" accept="image/jpeg,image/png,image/jpg"
+                (change)="onFileChange($event)" style="display: none;" />
+              <span class="up-avatar-hint">JPEG or PNG · max 5 MB</span>
+            </div>
+          </div>
+        </section>
 
-    <!-- Confirm Password -->
-    <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" />
-      <small *ngIf="profileForm.get('confirmPassword')?.errors?.['mismatch']
-           && profileForm.get('confirmPassword')?.touched" class="text-danger">
-        Passwords do not match.
-      </small>
-    </div>
+        <hr class="up-divider" />
 
-    <!-- Profile Image -->
-    <div class="form-group">
-      <label for="image">Profile Image</label>
-      <input type="file" (change)="onFileChange($event)" class="form-control" />
-    </div>
+        <!-- ── Personal Info Section ── -->
+        <section class="up-section">
+          <p class="up-section-label">Personal Info</p>
 
-    <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
-      Update Profile
-    </button>
-  </form>
-</div>
+          <div class="up-grid-2">
+            <!-- First Name — no validators in TS, no error state -->
+            <div class="up-form-group">
+              <label class="up-label" for="firstName">First Name</label>
+              <input id="firstName" type="text" class="up-input" formControlName="firstName" placeholder="Jane"
+                autocomplete="given-name" />
+            </div>
+
+            <!-- Last Name — no validators in TS, no error state -->
+            <div class="up-form-group">
+              <label class="up-label" for="lastName">Last Name</label>
+              <input id="lastName" type="text" class="up-input" formControlName="lastName" placeholder="Doe"
+                autocomplete="family-name" />
+            </div>
+          </div>
+
+          <!-- Email — Validators.email -->
+          <div class="up-form-group">
+            <label class="up-label" for="email">Email Address</label>
+            <input id="email" type="email" class="up-input"
+              [class.up-input--error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+              formControlName="email" placeholder="jane@example.com" autocomplete="email" />
+            <span class="up-error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+              Enter a valid email address.
+            </span>
+          </div>
+
+          <!-- Mobile Phone — Validators.pattern Egyptian number -->
+          <div class="up-form-group">
+            <label class="up-label" for="mobilePhone">Mobile Phone</label>
+            <input id="mobilePhone" type="tel" class="up-input"
+              [class.up-input--error]="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched"
+              formControlName="mobilePhone" placeholder="01XXXXXXXXX" autocomplete="tel" />
+            <span class="up-error"
+              *ngIf="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched">
+              Enter a valid Egyptian mobile number.
+            </span>
+          </div>
+        </section>
+
+        <hr class="up-divider" />
+
+        <!-- ── Password Section ── -->
+        <section class="up-section">
+          <p class="up-section-label">Change Password</p>
+
+          <!-- New Password — Validators.minLength(10) -->
+          <div class="up-form-group">
+            <label class="up-label" for="password">New Password</label>
+            <div class="up-input-wrap">
+              <input id="password" [type]="showPassword ? 'text' : 'password'" class="up-input"
+                [class.up-input--error]="profileForm.get('password')?.invalid && profileForm.get('password')?.touched"
+                formControlName="password" placeholder="Min. 10 characters" autocomplete="new-password" />
+              <span class="up-input-icon" (click)="showPassword = !showPassword">
+                <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              </span>
+            </div>
+            <span class="up-error" *ngIf="profileForm.get('password')?.invalid && profileForm.get('password')?.touched">
+              Password must be at least 10 characters.
+            </span>
+
+            <!-- Strength indicator — shown when password has any value -->
+            <div class="up-strength" *ngIf="profileForm.get('password')?.value?.length > 0">
+              <div class="up-strength__bar" [class.filled-weak]="getPasswordStrength() >= 1"
+                [class.filled-medium]="getPasswordStrength() >= 1 && getPasswordStrength() < 3"
+                [class.filled-strong]="getPasswordStrength() >= 3"></div>
+              <div class="up-strength__bar" [class.filled-medium]="getPasswordStrength() >= 2"
+                [class.filled-strong]="getPasswordStrength() >= 3"></div>
+              <div class="up-strength__bar" [class.filled-strong]="getPasswordStrength() >= 3"></div>
+              <span class="up-strength__label" [class.weak]="getPasswordStrength() === 1"
+                [class.medium]="getPasswordStrength() === 2" [class.strong]="getPasswordStrength() >= 3">
+                {{ getPasswordStrengthLabel() }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Confirm Password — passwordMatchValidator (cross-field) -->
+          <div class="up-form-group">
+            <label class="up-label" for="confirmPassword">Confirm Password</label>
+            <div class="up-input-wrap">
+              <input id="confirmPassword" [type]="showConfirm ? 'text' : 'password'" class="up-input"
+                [class.up-input--error]="profileForm.get('confirmPassword')?.errors?.['mismatch'] && profileForm.get('confirmPassword')?.touched"
+                formControlName="confirmPassword" placeholder="Repeat new password" autocomplete="new-password" />
+              <span class="up-input-icon" (click)="showConfirm = !showConfirm">
+                <svg *ngIf="!showConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg *ngIf="showConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              </span>
+            </div>
+            <span class="up-error"
+              *ngIf="profileForm.get('confirmPassword')?.errors?.['mismatch'] && profileForm.get('confirmPassword')?.touched">
+              Passwords do not match.
+            </span>
+          </div>
+        </section>
+
+        <!-- ── Submit — disabled when form is invalid ── -->
+        <button type="submit" class="up-btn-primary" [disabled]="profileForm.invalid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Save Changes
+        </button>
+
+      </form>
+    </div><!-- /up-body -->
+  </div><!-- /up-card -->
+</div><!-- /up-page -->

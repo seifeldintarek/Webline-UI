@@ -1,72 +1,553 @@
-/* Container: full height, horizontally centered content */
-.update-profile-container {
-    display: flex;
+/* ============================================================
+   Update Profile – Refined Dark Theme
+   Aesthetic: Editorial / Luxury Utilitarian
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── CSS Custom Properties ───────────────────────────────── */
+:host {
+  --bg-deep: #0d0f14;
+  --bg-surface: #13161e;
+  --bg-elevated: #1a1e2a;
+  --bg-hover: #21263a;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-focus: rgba(99, 179, 237, 0.55);
+  --border-default: rgba(255, 255, 255, 0.10);
+
+  --accent-primary: #63b3ed;
+  --accent-glow: rgba(99, 179, 237, 0.18);
+  --accent-danger: #fc8181;
+  --accent-success: #68d391;
+
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-muted: #555b6e;
+  --text-label: #a0a8bc;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-input: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-button: 0 4px 20px rgba(99, 179, 237, 0.30);
+
+  --transition-fast: 0.15s ease;
+  --transition-med: 0.25s ease;
+
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+/* ── Page Wrapper ────────────────────────────────────────── */
+.up-page {
+  min-height: 100%;
+  background: var(--bg-deep);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px 80px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 70% 20%, rgba(99, 179, 237, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(104, 211, 145, 0.04) 0%, transparent 50%);
+
+  @media (max-width: 640px) {
+    padding: 24px 12px 60px;
+    align-items: flex-start;
+  }
+}
+
+/* ── Card ────────────────────────────────────────────────── */
+.up-card {
+  width: 100%;
+  max-width: 560px;
+  min-width: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: cardIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @media (max-width: 640px) {
+    border-radius: var(--radius-lg);
+    max-width: 100%;
+  }
+}
+
+/* ── Card Header ─────────────────────────────────────────── */
+.up-header {
+  padding: 36px 40px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99, 179, 237, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    padding: 28px 24px 22px;
+  }
+}
+
+.up-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin: 0 0 10px;
+  opacity: 0.85;
+}
+
+.up-header__title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+
+  @media (max-width: 480px) {
+    font-size: 22px;
+  }
+}
+
+.up-header__subtitle {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* ── Card Body ───────────────────────────────────────────── */
+.up-body {
+  padding: 36px 40px 40px;
+
+  @media (max-width: 640px) {
+    padding: 28px 24px 32px;
+  }
+}
+
+/* ── Section Label ───────────────────────────────────────── */
+.up-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin: 0 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    display: block;
+    opacity: 0.7;
+  }
+}
+
+/* ── Form Sections ───────────────────────────────────────── */
+.up-section {
+  margin-bottom: 34px;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Field Grid ──────────────────────────────────────────── */
+.up-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ── Form Group ──────────────────────────────────────────── */
+.up-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Label ───────────────────────────────────────────────── */
+.up-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-label);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  .up-label__required {
+    color: var(--accent-danger);
+    font-size: 14px;
+    line-height: 1;
+    margin-top: -2px;
+  }
+}
+
+/* ── Input Field ─────────────────────────────────────────── */
+.up-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 15px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+  box-shadow: var(--shadow-input);
+  -webkit-appearance: none;
+
+  &::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: var(--bg-hover);
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-input);
+    background: var(--bg-hover);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.up-input--error {
+    border-color: rgba(252, 129, 129, 0.45);
+    box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.12);
+  }
+
+  /* Autofill override */
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 40px var(--bg-elevated) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    caret-color: var(--text-primary);
+  }
+}
+
+/* ── Password Input Wrapper ──────────────────────────────── */
+.up-input-wrap {
+  position: relative;
+
+  .up-input {
+    padding-right: 44px;
+  }
+}
+
+.up-input-icon {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--text-secondary);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ── Error / Helper Text ─────────────────────────────────── */
+.up-error {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--accent-danger);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: errorIn 0.2s ease both;
+
+  &::before {
+    content: '⚠';
+    font-size: 10px;
+  }
+}
+
+/* ── Avatar Upload ───────────────────────────────────────── */
+.up-avatar-zone {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 440px) {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    /* full viewport height */
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.up-avatar-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color var(--transition-med);
+  position: relative;
+
+  &:has(+ .up-avatar-actions:hover),
+  &:hover {
+    border-color: var(--accent-primary);
+  }
+
+  img {
     width: 100%;
-    /* full width of parent */
-    max-width: 500px;
-    /* limit the container width */
-    margin: 0 auto;
-    /* center horizontally */
-    box-sizing: border-box;
-    padding: 20px;
-    background-color: #fff;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    overflow-y: auto;
-    /* scroll if needed */
+  .up-avatar-initials {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
+    user-select: none;
+  }
 }
 
-/* Form styling */
-.update-profile-container form {
-    width: 100%;
-    max-width: 400px;
-    /* limit form width */
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-    /* center title & button */
+.up-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* Title styling */
-.update-profile-container h2 {
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    font-weight: bold;
+.up-avatar-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
-/* Form group styling */
-.update-profile-container .form-group {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 5px;
-    text-align: left;
-    /* labels left-aligned */
+/* ── File Upload Button ──────────────────────────────────── */
+.up-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: var(--bg-hover);
+  }
 }
 
-/* Input fields styling */
-.update-profile-container input.form-control {
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
+/* ── Divider ─────────────────────────────────────────────── */
+.up-divider {
+  margin: 32px 0;
+  border: none;
+  height: 1px;
+  background: var(--border-subtle);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 60px;
+    background: linear-gradient(90deg, var(--accent-primary), transparent);
+    opacity: 0.3;
+  }
 }
 
-/* Update button styling */
-.update-profile-container button.btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    align-self: center;
-    /* center horizontally */
+/* ── Submit Button ───────────────────────────────────────── */
+.up-btn-primary {
+  width: 100%;
+  padding: 13px 24px;
+  background: var(--accent-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #0d0f14;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    opacity var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  box-shadow: var(--shadow-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 6px 28px rgba(99, 179, 237, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ── Password Strength Indicator ─────────────────────────── */
+.up-strength {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.up-strength__bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-default);
+  transition: background var(--transition-med);
+
+  &.filled-weak {
+    background: var(--accent-danger);
+  }
+
+  &.filled-medium {
+    background: #f6ad55;
+  }
+
+  &.filled-strong {
+    background: var(--accent-success);
+  }
+}
+
+.up-strength__label {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  min-width: 44px;
+  text-align: right;
+
+  &.weak {
+    color: var(--accent-danger);
+  }
+
+  &.medium {
+    color: #f6ad55;
+  }
+
+  &.strong {
+    color: var(--accent-success);
+  }
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes errorIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
