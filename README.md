@@ -2,8 +2,7 @@
 
 ## 🌐 Angular Frontend
 
-The **XChat Frontend** is a Single Page Application (SPA) built with **Angular**, providing a responsive and user-friendly interface for the [chat application](https://github.com/BeshoyHani/xchat-srv).
-
+The **Webline Frontend** is a Single Page Application (SPA) built with **Angular**, providing a responsive and user-friendly interface for the [chat application]
 ### 🔹 Features
 
 - User authentication (login/register)
