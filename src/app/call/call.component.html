@@ -1,4 +1,5 @@
-<div class="call-wrapper">
+<div class="call-wrapper" #callWrapper (mousedown)="onDragStart($event)" (touchstart)="onTouchStart($event)">
+
   <!-- Loading state -->
   <div *ngIf="isLoading" class="call-loader">
     <div class="call-loader__ring"></div>
@@ -23,16 +24,16 @@
       <p class="precall-label">Calling</p>
       <h2 class="precall-name">{{ remoteUserName }}</h2>
       <div class="precall-actions">
-        <button class="btn-start" (click)="confirmCall()">
+        <button class="btn-start" (click)="confirmCall(); $event.stopPropagation()">
           <i class="pi pi-video"></i> Start
         </button>
-        <button class="btn-cancel" (click)="cancelCall()">
-          <i class="pi pi-phone"></i> Cancel
+        <button class="btn-cancel" (click)="cancelCall(); $event.stopPropagation()">
+          <i class="pi pi-times"></i> Cancel
         </button>
       </div>
     </div>
 
-    <!-- Zego mounts here (hidden during pre-call, visible once Zego initializes) -->
+    <!-- Zego mounts here -->
     <div id="zego-call-root" [class.hidden]="preCallPhase"></div>
 
   </div>

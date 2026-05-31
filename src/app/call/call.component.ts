@@ -37,6 +37,11 @@ export class CallComponent implements OnInit, OnDestroy {
   private hasJoined = false;      // prevents double joinRoom
   // ────────────────────────────────────────────────────────────────────────
 
+  // ── Drag state ───────────────────────────────────────────────────────────
+  private dragOffsetX = 0;
+  private dragOffsetY = 0;
+  // ────────────────────────────────────────────────────────────────────────
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -96,6 +101,64 @@ export class CallComponent implements OnInit, OnDestroy {
       this.ws.declineCall(id, this.roomId, currentUser.id!)
     );
     this.navigateBack();
+  }
+
+  // ── Drag handlers ─────────────────────────────────────────────────────────
+
+  onDragStart(event: MouseEvent): void {
+    if ((event.target as HTMLElement).closest('button')) return;
+
+    const wrapper = event.currentTarget as HTMLElement;
+    const rect = wrapper.getBoundingClientRect();
+    this.dragOffsetX = event.clientX - rect.left;
+    this.dragOffsetY = event.clientY - rect.top;
+
+    // Clear the centering transform and switch to explicit top/left
+    wrapper.style.transform = 'none';
+    wrapper.style.top = `${rect.top}px`;
+    wrapper.style.left = `${rect.left}px`;
+
+    const onMove = (e: MouseEvent) => {
+      wrapper.style.left = `${e.clientX - this.dragOffsetX}px`;
+      wrapper.style.top = `${e.clientY - this.dragOffsetY}px`;
+    };
+
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    if ((event.target as HTMLElement).closest('button')) return;
+
+    const touch = event.touches[0];
+    const wrapper = event.currentTarget as HTMLElement;
+    const rect = wrapper.getBoundingClientRect();
+    this.dragOffsetX = touch.clientX - rect.left;
+    this.dragOffsetY = touch.clientY - rect.top;
+
+    // Clear the centering transform and switch to explicit top/left
+    wrapper.style.transform = 'none';
+    wrapper.style.top = `${rect.top}px`;
+    wrapper.style.left = `${rect.left}px`;
+
+    const onMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      wrapper.style.left = `${t.clientX - this.dragOffsetX}px`;
+      wrapper.style.top = `${t.clientY - this.dragOffsetY}px`;
+    };
+
+    const onEnd = () => {
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onEnd);
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────
@@ -193,14 +256,12 @@ export class CallComponent implements OnInit, OnDestroy {
 
   private startZegoSession(Zego: any): void {
     // Guard: if a session is already active, do nothing.
-    // This makes it safe even if initZego() is somehow triggered twice.
     if (this.hasJoined) {
       console.warn('Zego session already active — ignoring duplicate joinRoom.');
       return;
     }
 
     // Destroy any lingering instance from a previous call attempt
-    // (e.g. user left and came back to the same component without a full destroy)
     if (this.zp) {
       try { this.zp.destroy(); } catch (_) { }
       this.zp = null;
