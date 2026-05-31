@@ -336,7 +336,8 @@ button[routerlink='/home/update-profile'] {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: var(--bg-deep);
   background-image:
     radial-gradient(ellipse 55% 45% at 80% 10%, rgba(99, 179, 237, 0.04) 0%, transparent 60%),
@@ -350,7 +351,7 @@ app-call-notification {
 router-outlet~* {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: visible;
   overflow-x: hidden;
   display: block;
   width: 100%;
