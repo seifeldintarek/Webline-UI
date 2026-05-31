@@ -42,6 +42,7 @@ export class GroupsComponent implements OnInit {
   friendsPage: number = 1;
   addedMemberIds = new Set<number>();
   addMemberError = '';
+  existingMemberIds = new Set<number>(); // users already in the group — excluded from the list
 
   // FIX 2: track conversation loading state for the add-members modal
   conversationLoading = false;
@@ -173,6 +174,7 @@ export class GroupsComponent implements OnInit {
     this.addMemberError = '';
 
     if (this.addedMemberIds.has(friend.id)) {
+      // Remove: undo an add done this session — remove from group and restore to list
       this.groupMemberService.removeMember(this.selectedGroup.id, friend.id).pipe(
         switchMap(() => this.groupService.getConversationById(convId)),
         switchMap(conv => {
@@ -180,14 +182,19 @@ export class GroupsComponent implements OnInit {
           return this.groupService.updateGroupConversation(convId, { ...conv, participants: updatedParticipants });
         })
       ).subscribe({
-        next: () => this.addedMemberIds.delete(friend.id!),
+        next: () => {
+          this.addedMemberIds.delete(friend.id!);
+          this.existingMemberIds.delete(friend.id!); // restore to eligible list
+        },
         error: () => { this.addMemberError = 'Failed to remove member.'; }
       });
     } else {
       this.groupMemberService.isMember(this.selectedGroup.id, friend.id).pipe(
         switchMap(isMember => {
           if (isMember) {
+            // Already a member server-side: just mark locally and hide from list
             this.addedMemberIds.add(friend.id!);
+            this.existingMemberIds.add(friend.id!);
             return this.groupService.getConversationById(convId);
           }
           return this.groupMemberService.addMember(this.selectedGroup!.id!, friend.id!).pipe(
@@ -199,7 +206,12 @@ export class GroupsComponent implements OnInit {
           return this.groupService.updateGroupConversation(convId, { ...conv, participants: updatedParticipants });
         })
       ).subscribe({
-        next: () => this.addedMemberIds.add(friend.id!),
+        next: () => {
+          this.addedMemberIds.add(friend.id!);
+          this.existingMemberIds.add(friend.id!); // hide from list going forward
+          // Remove from visible friends list immediately
+          this.friends = this.friends.filter(f => f.id !== friend.id);
+        },
         error: () => { this.addMemberError = 'Failed to add member.'; }
       });
     }
@@ -208,13 +220,28 @@ export class GroupsComponent implements OnInit {
   openAddMembers(group: GroupModel) {
     this.selectedGroup = group;
     this.addedMemberIds.clear();
+    this.existingMemberIds.clear();
     this.addMemberError = '';
     this.friendsPage = 1;
-    this.loadFriends();
 
-    // FIX 2: set loading flag so toggleMember() blocks until conv is ready
+    // Load existing group members first, then filter friends list
+    this.conversationLoading = true;
+    this.groupService.getMembers(group.id!).subscribe({
+      next: (data) => {
+        // Collect all current member IDs so they are hidden in the friends list
+        data.content.forEach((m: any) => {
+          if (m.member?.id) this.existingMemberIds.add(m.member.id);
+        });
+        this.loadFriends();
+      },
+      error: () => {
+        // Even on error, still show the friends list unfiltered
+        this.loadFriends();
+      }
+    });
+
+    // Load conversation id if not cached yet
     if (!this.groupConversationMap.has(group.id!)) {
-      this.conversationLoading = true;
       this.groupService.getGroupConversation(group.id!).subscribe({
         next: (conv) => {
           this.groupConversationMap.set(group.id!, conv.id!);
@@ -225,6 +252,8 @@ export class GroupsComponent implements OnInit {
           this.conversationLoading = false;
         }
       });
+    } else {
+      this.conversationLoading = false;
     }
 
     this.showAddMembersModal = true;
@@ -232,7 +261,12 @@ export class GroupsComponent implements OnInit {
 
   loadFriends() {
     this.friendshipService.getUserFriends(this.friendsPage).subscribe({
-      next: (data) => { this.friends = data.content; },
+      next: (data) => {
+        // Filter out users who are already members of the group
+        this.friends = data.content.filter(
+          (f: UserModel) => !this.existingMemberIds.has(f.id!)
+        );
+      },
       error: (err) => console.error('Error loading friends:', err)
     });
   }
@@ -242,6 +276,7 @@ export class GroupsComponent implements OnInit {
     this.selectedGroup = null;
     this.friends = [];
     this.addedMemberIds.clear();
+    this.existingMemberIds.clear();
     this.addMemberError = '';
     this.conversationLoading = false;
   }
@@ -255,8 +290,11 @@ export class GroupsComponent implements OnInit {
   friendsNextPage() {
     this.friendshipService.getUserFriends(this.friendsPage + 1).subscribe({
       next: (data) => {
-        if (data.content.length > 0) {
-          this.friends = data.content;
+        const filtered = data.content.filter(
+          (f: UserModel) => !this.existingMemberIds.has(f.id!)
+        );
+        if (filtered.length > 0 || data.content.length > 0) {
+          this.friends = filtered;
           this.friendsPage++;
         }
       },
@@ -267,7 +305,12 @@ export class GroupsComponent implements OnInit {
   friendsPrevPage() {
     if (this.friendsPage > 1) {
       this.friendshipService.getUserFriends(this.friendsPage - 1).subscribe({
-        next: (data) => { this.friends = data.content; this.friendsPage--; },
+        next: (data) => {
+          this.friends = data.content.filter(
+            (f: UserModel) => !this.existingMemberIds.has(f.id!)
+          );
+          this.friendsPage--;
+        },
         error: (err) => console.error(err)
       });
     }
