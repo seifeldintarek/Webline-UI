@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'xchat_app';
+  title = 'Webline Chat App';
   isLoading = true;
 
   constructor(private authService: AuthService, private router: Router) { }
