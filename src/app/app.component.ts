@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authService.validateToken().subscribe(isValid => {
       if (isValid) {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home/friends']);
       }
       this.isLoading = false;
     });
