@@ -1,22 +1,43 @@
-<div class="friends-container">
-    <div class="friends">
-        <div class="result-item" *ngFor="let friend of friendRequests">
-            <img [src]="friend.image" alt="profile" class="avatar" />
-            <div class="friend-info">
-                <div class="fullName">{{ friend.fullName }}</div>
-                <div class="email">{{ friend.email }}</div>
-            </div>
-            <p-button [label]="acceptedFriends.has(friend.id!) ? 'Remove' : 'Accept'"
-                [severity]="acceptedFriends.has(friend.id!) ? 'danger' : 'success'" [rounded]="true" styleClass="my-btn"
-                (click)="toggleFriend(friend)">
-            </p-button>
+<div class="requests-container">
 
-        </div>
+  <!-- Header -->
+  <div class="requests-header">
+    <span class="requests-header__eyebrow">Inbox</span>
+    <h2 class="requests-header__title">Friend Requests</h2>
+    <p class="requests-header__sub">People who want to connect with you</p>
+  </div>
+
+  <!-- Requests list -->
+  <div class="requests-list">
+
+    <div class="result-item" *ngFor="let friend of friendRequests">
+      <img [src]="friend.image" alt="profile" class="result-item__avatar" />
+
+      <div class="result-item__info">
+        <span class="result-item__name">{{ friend.fullName }}</span>
+        <span class="result-item__email">{{ friend.email }}</span>
+      </div>
+
+      <p-button [label]="acceptedFriends.has(friend.id!) ? 'Remove' : 'Accept'"
+        [severity]="acceptedFriends.has(friend.id!) ? 'danger' : 'success'" [rounded]="true" styleClass="my-btn"
+        (click)="toggleFriend(friend)">
+      </p-button>
     </div>
 
-    <div class="pagination">
-        <button (click)="prevPage()" [disabled]="page === 1">⬅ Prev</button>
-        <span>Page {{ page }}</span>
-        <button (click)="nextPage()" [disabled]="friendRequests.length < 10">Next ➡</button>
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="friendRequests.length === 0">
+      <span class="empty-state__icon">📨</span>
+      <p class="empty-state__text">No pending requests</p>
+      <p class="empty-state__sub">You're all caught up</p>
     </div>
+
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="pagination__btn" (click)="prevPage()" [disabled]="page === 1">← Prev</button>
+    <span class="pagination__page">Page {{ page }}</span>
+    <button class="pagination__btn" (click)="nextPage()" [disabled]="friendRequests.length < 10">Next →</button>
+  </div>
+
 </div>

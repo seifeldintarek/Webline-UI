@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'xchat_app';
+  title = 'Webline Chat App';
   isLoading = true;
 
   constructor(private authService: AuthService, private router: Router) { }
@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authService.validateToken().subscribe(isValid => {
       if (isValid) {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home/friends']);
       }
       this.isLoading = false;
     });

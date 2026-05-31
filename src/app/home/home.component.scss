@@ -1,61 +1,373 @@
-.container {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    width: 100vw;
-    /* ensure full width */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Tokens (mirrored from update-profile) ───────────────── */
+:host {
+  --bg-deep: #0d0f14;
+  --bg-surface: #13161e;
+  --bg-elevated: #1a1e2a;
+  --bg-hover: #21263a;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+
+  --accent: #63b3ed;
+  --accent-glow: rgba(99, 179, 237, 0.18);
+  --accent-danger: #fc8181;
+  --accent-success: #68d391;
+  --accent-amber: #f6ad55;
+  --accent-purple: #b794f4;
+
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-muted: #555b6e;
+
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --sidebar-w: 200px;
+
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: var(--font-body);
 }
 
+/* ── Layout ──────────────────────────────────────────────── */
+.home-wrapper {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
 .sidebar {
-    width: 220px;
-    /* fixed width */
-    background: #f5f5f5;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    /* stack buttons vertically */
-    gap: 12px;
-    border-right: 1px solid #ddd;
-    box-sizing: border-box;
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  height: 100%;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 12px 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  gap: 4px;
+
+  /* Thin glow line on left edge */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 0;
+    width: 2px;
+    height: 70%;
+    background: linear-gradient(180deg, transparent, var(--accent) 40%, var(--accent-purple) 70%, transparent);
+    opacity: 0.4;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* Ambient radial behind sidebar */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 120% 50% at -20% 40%, rgba(99, 179, 237, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
 }
 
+/* ── Sidebar top logo mark ───────────────────────────────── */
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 10px 20px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+
+  &-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(99, 179, 237, 0.6);
+    flex-shrink: 0;
+  }
+
+  &-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+}
+
+/* ── Section label ───────────────────────────────────────── */
+.sidebar__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 10px 4px;
+  opacity: 0.7;
+}
+
+/* ── Base nav button ─────────────────────────────────────── */
 .sidebar button {
-    padding: 10px 15px;
-    border: none;
-    background: transparent;
-    /* transparent by default */
-    cursor: pointer;
-    text-align: left;
-    font-size: 16px;
-    border-radius: 6px;
-    color: #333;
-}
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  z-index: 1;
 
-.sidebar button:hover {
-    background: #e1e1e1;
-    /* hover effect */
-}
-
-.icon-btn {
-    font-size: 22px;
+  /* Emoji icon slot */
+  &::before {
+    font-size: 15px;
+    flex-shrink: 0;
+    width: 18px;
     text-align: center;
-    margin-bottom: 20px;
-    /* space below search icon */
+  }
+
+  &:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-default);
+  }
 }
 
-.main-content {
-    flex: 1;
-    /* take all remaining space */
-    padding: 20px;
-    overflow-y: auto;
-    /* scroll if content is long */
+/* ── Active state (routerLinkActive) ─────────────────────── */
+.sidebar button.active {
+  color: var(--accent);
+  background: rgba(99, 179, 237, 0.08);
+  border-color: rgba(99, 179, 237, 0.2);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    width: 3px;
+    height: 60%;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 6px rgba(99, 179, 237, 0.5);
+  }
 }
 
+/* ── Search button — unique: outlined search bar look ─────── */
+.icon-btn {
+  font-size: 13px !important;
+  font-family: var(--font-mono) !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-default) !important;
+  background: var(--bg-elevated) !important;
+  border-radius: 8px !important;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+
+  &::before {
+    content: '🔍';
+  }
+
+  &:hover {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    background: rgba(99, 179, 237, 0.06) !important;
+  }
+
+  &.active {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+  }
+}
+
+/* ── Friends — blue accent ───────────────────────────────── */
+button[routerlink='/home/friends'] {
+  &::before {
+    content: '👥';
+  }
+
+  &:hover,
+  &.active {
+    color: #90cdf4;
+  }
+
+  &.active {
+    background: rgba(144, 205, 244, 0.08);
+    border-color: rgba(144, 205, 244, 0.2);
+
+    &::after {
+      background: #90cdf4;
+      box-shadow: 0 0 6px rgba(144, 205, 244, 0.5);
+    }
+  }
+}
+
+/* ── Groups — purple accent ──────────────────────────────── */
+button[routerlink='/home/groups'] {
+  &::before {
+    content: '🏠';
+  }
+
+  &:hover,
+  &.active {
+    color: var(--accent-purple);
+  }
+
+  &.active {
+    background: rgba(183, 148, 244, 0.08);
+    border-color: rgba(183, 148, 244, 0.2);
+
+    &::after {
+      background: var(--accent-purple);
+      box-shadow: 0 0 6px rgba(183, 148, 244, 0.5);
+    }
+  }
+}
+
+/* ── Requests — amber accent ─────────────────────────────── */
+button[routerlink='/home/requests'] {
+  &::before {
+    content: '📨';
+  }
+
+  &:hover,
+  &.active {
+    color: var(--accent-amber);
+  }
+
+  &.active {
+    background: rgba(246, 173, 85, 0.08);
+    border-color: rgba(246, 173, 85, 0.2);
+
+    &::after {
+      background: var(--accent-amber);
+      box-shadow: 0 0 6px rgba(246, 173, 85, 0.5);
+    }
+  }
+}
+
+/* ── Account — green accent ──────────────────────────────── */
+button[routerlink='/home/update-profile'] {
+  &::before {
+    content: '⚙️';
+  }
+
+  &:hover,
+  &.active {
+    color: var(--accent-success);
+  }
+
+  &.active {
+    background: rgba(104, 211, 145, 0.08);
+    border-color: rgba(104, 211, 145, 0.2);
+
+    &::after {
+      background: var(--accent-success);
+      box-shadow: 0 0 6px rgba(104, 211, 145, 0.5);
+    }
+  }
+}
+
+/* ── Spacer ──────────────────────────────────────────────── */
+.sidebar__spacer {
+  flex: 1;
+}
+
+/* ── Divider ─────────────────────────────────────────────── */
+.sidebar__divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 8px 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 48px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.2;
+  }
+}
+
+/* ── Logout — danger accent ──────────────────────────────── */
+.sidebar button:last-child {
+  color: var(--text-muted);
+  font-size: 13px;
+
+  &::before {
+    content: '↩';
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: rgba(252, 129, 129, 0.07);
+    color: var(--accent-danger);
+    border-color: rgba(252, 129, 129, 0.18);
+  }
+}
+
+/* ── Content area ────────────────────────────────────────── */
 .content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse 55% 45% at 80% 10%, rgba(99, 179, 237, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 35% at 10% 85%, rgba(104, 211, 145, 0.03) 0%, transparent 50%);
+}
+
+app-call-notification {
+  flex-shrink: 0;
+}
+
+router-outlet~* {
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  overflow-x: hidden;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 2px;
 }

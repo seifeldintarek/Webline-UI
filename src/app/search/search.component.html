@@ -1,29 +1,47 @@
 <div class="search-container">
-    <!-- 🔎 Search bar -->
-    <input type="text" [(ngModel)]="query" (keyup.enter)="search()" placeholder="Search..." class="search-input" />
 
-    <!-- 👥 Users list -->
-    <div class="users">
-        <div class="result-item" *ngFor="let user of users">
-            <img [src]="user.image" alt="profile" class="avatar" />
-            <div class="user-info">
-                <div class="fullName">{{ user.fullName }}</div>
-                <div class="email">{{ user.email }}</div>
-            </div>
+  <!-- Search bar -->
+  <div class="search-bar">
+    <span class="search-bar__icon">🔍</span>
+    <input type="text" class="search-bar__input" [(ngModel)]="query" (keyup.enter)="search()"
+      placeholder="Search people…" />
+  </div>
 
-            <p-button *ngIf="!isFriend(user) || isPending(user)" (click)="addFriend(user)"
-                [label]="isPending(user) ? 'Cancel' : 'Add'" [raised]="true"
-                [severity]="isPending(user) ? 'danger' : 'success'" styleClass="custom-btn">
-            </p-button>
+  <!-- Users list -->
+  <div class="users-list">
+    <div class="result-item" *ngFor="let user of users">
 
+      <img [src]="user.image" alt="profile" class="result-item__avatar" />
 
-        </div>
+      <div class="result-item__info">
+        <span class="result-item__name">{{ user.fullName }}</span>
+        <span class="result-item__email">{{ user.email }}</span>
+      </div>
+
+      <p-button *ngIf="!isFriend(user) || isPending(user)" (click)="addFriend(user)"
+        [label]="isPending(user) ? 'Cancel' : 'Add'" [raised]="true" [severity]="isPending(user) ? 'danger' : 'success'"
+        styleClass="custom-btn">
+      </p-button>
+
     </div>
 
-    <!-- ⬅➡ Pagination controls -->
-    <div class="pagination">
-        <button (click)="prevPage()" [disabled]="page === 1">⬅ Prev</button>
-        <span>Page {{ page }}</span>
-        <button (click)="nextPage()" [disabled]="users.length < 10">Next ➡</button>
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="users.length === 0">
+      <span class="empty-state__icon">👤</span>
+      <p class="empty-state__text">No users found</p>
+      <p class="empty-state__sub">Try a different name or email</p>
     </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="pagination__btn" (click)="prevPage()" [disabled]="page === 1">
+      ← Prev
+    </button>
+    <span class="pagination__page">Page {{ page }}</span>
+    <button class="pagination__btn" (click)="nextPage()" [disabled]="users.length < 10">
+      Next →
+    </button>
+  </div>
+
 </div>

@@ -1,41 +1,52 @@
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4" style="width: 26rem;">
-        <h3 class="text-center mb-4">Sign Up</h3>
-        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="firstName" formControlName="firstName"
-                        placeholder="Enter first name">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" formControlName="lastName"
-                        placeholder="Enter last name">
-                </div>
-            </div>
+<div class="signup-page">
+  <div class="signup-card">
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" formControlName="email" placeholder="Enter email">
-            </div>
-
-            <div class="mb-3">
-                <label for="mobilePhone" class="form-label">Mobile Phone</label>
-                <input type="tel" class="form-control" id="mobilePhone" formControlName="mobilePhone"
-                    placeholder="Enter your mobile phone">
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" formControlName="password"
-                    placeholder="Password">
-            </div>
-
-            <button type="submit" class="btn w-100"
-                style="background: linear-gradient(135deg, #007bff, #0056b3); border: none; color: white; font-weight: 500; padding: 12px; border-radius: 8px;">Sign
-                Up</button>
-        </form>
-
+    <div class="signup-header">
+      <div class="signup-header__brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Webline</span>
+      </div>
+      <h1 class="signup-header__title">Create account</h1>
+      <p class="signup-header__sub">Join and start connecting</p>
     </div>
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="firstName" class="field-label">First Name</label>
+          <input type="text" id="firstName" class="field-input" formControlName="firstName" placeholder="Omar" />
+        </div>
+        <div class="field-group">
+          <label for="lastName" class="field-label">Last Name</label>
+          <input type="text" id="lastName" class="field-input" formControlName="lastName" placeholder="Marei" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="email" class="field-label">Email address</label>
+        <input type="email" id="email" class="field-input" formControlName="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="field-group">
+        <label for="mobilePhone" class="field-label">Mobile Phone</label>
+        <input type="tel" id="mobilePhone" class="field-input" formControlName="mobilePhone"
+          placeholder="+20 100 000 0000" />
+      </div>
+
+      <div class="field-group">
+        <label for="password" class="field-label">Password</label>
+        <input type="password" id="password" class="field-input" formControlName="password"
+          placeholder="Min. 10 characters" />
+      </div>
+
+      <button type="submit" class="btn-primary">Create account</button>
+
+      <p class="signup-footer">
+        Already have an account?
+        <a routerLink="/login" class="signup-footer__link">Sign in</a>
+      </p>
+
+    </form>
+  </div>
 </div>

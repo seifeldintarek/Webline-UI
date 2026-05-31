@@ -1,85 +1,301 @@
-// call.component.scss
+// ── Design Tokens ─────────────────────────────────────────────────────────────
+$bg-dark: #0d0f14;
+$bg-card: #1c2333;
+$bg-hover: #232b3e;
+$border-color: rgba(255, 255, 255, 0.08);
+$accent-blue: #4f8ef7;
+$accent-green: #22c55e;
+$accent-danger: #f43f5e;
+$text-primary: #e8eaf0;
+$text-muted: #5a6478;
+$radius: 16px;
+$transition: 0.18s ease;
 
+// ── Pop-out shell ─────────────────────────────────────────────────────────────
 .call-wrapper {
+  // Centered overlay
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99990;
+
+  // Responsive sizing: fills most of the viewport, capped at comfortable max
+  width: clamp(320px, 80vw, 960px);
+  height: clamp(240px, 75vh, 640px);
+
+  background: $bg-dark;
+  border-radius: $radius;
+  border: 1px solid $border-color;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  // Allow manual resize from corner
+  resize: both;
+  min-width: 300px;
+  min-height: 220px;
+  max-width: 96vw;
+  max-height: 92vh;
+
+  // Cursor signals draggability
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  // Smooth entrance
+  animation: popout-enter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  // Drag handle bar at the top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.15);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+// ── Loading state ─────────────────────────────────────────────────────────────
+.call-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.call-loader__ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid rgba($accent-blue, 0.2);
+  border-top-color: $accent-blue;
+  animation: spin 0.9s linear infinite;
+}
+
+.call-loader__text {
+  font-size: 13px;
+  color: $text-muted;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+.call-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.call-error__icon {
+  font-size: 32px;
+}
+
+.call-error__msg {
+  font-size: 13px;
+  color: $text-muted;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.call-error__btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px;
+  background: rgba($accent-danger, 0.15);
+  color: $accent-danger;
+  border: 1px solid rgba($accent-danger, 0.3);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background $transition;
+
+  &:hover {
+    background: rgba($accent-danger, 0.28);
+  }
+}
+
+// ── Inner wrapper ─────────────────────────────────────────────────────────────
+.call-inner {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0d0d0d;
+
+  &.hidden {
+    display: none;
+  }
 }
 
+// ── Zego mount point ──────────────────────────────────────────────────────────
+#zego-call-root {
+  width: 100%;
+  height: 100%;
+
+  &.hidden {
+    display: none;
+  }
+
+  :host ::ng-deep {
+    background: $bg-dark !important;
+    border-radius: $radius !important;
+  }
+}
+
+// ── Pre-call screen ───────────────────────────────────────────────────────────
 .precall-screen {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  color: #fff;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  color: $text-primary;
+  font-family: 'Segoe UI', sans-serif;
+  cursor: default;
+}
 
-  .precall-avatar-ring {
-    width: 120px;
-    height: 120px;
+.precall-avatar-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 4px;
+  animation: pulse-ring 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    padding: 6px;
-    animation: pulse-ring 1.8s ease-in-out infinite;
-
-    img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-  }
-
-  .precall-label {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 0;
-  }
-
-  .precall-name {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .precall-actions {
-    margin-top: 16px;
-  }
-
-  .btn-cancel {
-    background: #e53935;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 32px;
-    font-size: 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #c62828;
-    }
+    object-fit: cover;
+    background: #2a3550;
   }
 }
 
-.zego-container {
-  width: 100%;
-  height: 100%;
+.precall-label {
+  font-size: 11px;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-weight: 600;
+}
+
+.precall-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: $text-primary;
+}
+
+.precall-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-start {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 999px;
+  background: $accent-green;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition, transform $transition;
+  box-shadow: 0 4px 14px rgba($accent-green, 0.4);
+
+  &:hover {
+    background: darken(#22c55e, 6%);
+    transform: scale(1.04);
+  }
+}
+
+.btn-cancel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 999px;
+  background: rgba($accent-danger, 0.15);
+  color: $accent-danger;
+  border: 1px solid rgba($accent-danger, 0.35);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition, transform $transition;
+
+  &:hover {
+    background: rgba($accent-danger, 0.28);
+    transform: scale(1.04);
+  }
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+@keyframes popout-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 20px)) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @keyframes pulse-ring {
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.12);
   }
 
   50% {
-    box-shadow: 0 0 0 18px rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 14px rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ── Responsive: full screen on mobile ────────────────────────────────────────
+@media (max-width: 600px) {
+  .call-wrapper {
+    width: 100vw !important;
+    height: 100dvh !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    border-radius: 0;
+    resize: none;
   }
 }

@@ -39,13 +39,14 @@
       <div class="modal-card modal-card--wide">
         <h3>Add Members to "{{ selectedGroup?.name }}"</h3>
 
-        <!-- FIX 2: show spinner while conversation is loading -->
+        <!-- Loading spinner -->
         <div *ngIf="conversationLoading" class="loading-state">
           <i class="pi pi-spin pi-spinner"></i> Loading conversation...
         </div>
 
         <div class="members-list" *ngIf="!conversationLoading">
           <div *ngFor="let friend of friends" class="member-item">
+
             <!-- Avatar -->
             <div class="avatar" *ngIf="!friend.image">
               {{ friend.firstName?.charAt(0)?.toUpperCase() }}
@@ -64,6 +65,7 @@
           </div>
 
           <div *ngIf="friends.length === 0" class="empty-state">
+            <i class="pi pi-users"></i>
             <p>No friends to add.</p>
           </div>
         </div>
@@ -88,6 +90,8 @@
     <!-- ── Groups List ────────────────────────────────────────────────────── -->
     <div class="groups">
       <div class="result-item" *ngFor="let group of groups">
+
+        <!-- Avatar -->
         <div class="avatar" *ngIf="!group.image">
           {{ group.name.charAt(0).toUpperCase() }}
         </div>
@@ -107,29 +111,33 @@
         <p-button icon="pi pi-comment" [rounded]="true" severity="info" (click)="openGroupChat(group)">
         </p-button>
 
-        <!-- FIX 1: disable Delete/Leave button until admin statuses are loaded -->
+        <!-- Delete / Leave -->
         <p-button [label]="isAdmin(group.id!) ? 'Delete' : 'Leave'" [severity]="isAdmin(group.id!) ? 'danger' : 'warn'"
-          [disabled]="!adminStatusesLoaded" (click)="deleteOrLeaveGroup(group.id!)">
+          [disabled]="!adminStatusesLoaded" [rounded]="true" (click)="deleteOrLeaveGroup(group.id!)">
         </p-button>
       </div>
 
-      <!-- FIX 3: empty-state moved OUTSIDE the *ngFor so it actually renders -->
+      <!-- Empty state -->
       <div *ngIf="groups.length === 0" class="empty-state">
+        <i class="pi pi-users"></i>
         <p>You are not in any groups yet.</p>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination-controls">
-        <p-button label="Previous" icon="pi pi-chevron-left" [disabled]="page === 1" (click)="prevPage()"></p-button>
-        <span class="page-number">Page {{ page }}</span>
-        <p-button label="Next" icon="pi pi-chevron-right" [disabled]="groups.length < 10"
-          (click)="nextPage()"></p-button>
+        <small>Create a group or ask someone to add you</small>
       </div>
     </div>
 
-    <!-- Chat panel -->
-    <div class="chat-panel">
-      <router-outlet></router-outlet>
+    <!-- Pagination -->
+    <div class="pagination-controls">
+      <p-button label="← Prev" [rounded]="true" severity="secondary" [disabled]="page === 1"
+        (click)="prevPage()"></p-button>
+      <span class="page-number">Page {{ page }}</span>
+      <p-button label="Next →" [rounded]="true" severity="secondary" [disabled]="groups.length < 10"
+        (click)="nextPage()"></p-button>
     </div>
+
+  </div>
+
+  <!-- Chat panel -->
+  <div class="chat-panel">
+    <router-outlet></router-outlet>
   </div>
 </div>

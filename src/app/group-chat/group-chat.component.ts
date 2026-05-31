@@ -92,6 +92,9 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   private loadGroup(groupId: number) {
     this.isLoading = true;
     this.groupId = groupId;
+    this.members = [];      // reset before loading so switching groups doesn't stack old members
+    this.messages = [];
+    this.conversation = null;
     this.groupService.getGroup(groupId).subscribe({
       next: (group: GroupModel) => {
         this.group = group;
@@ -108,9 +111,14 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   private loadMembers(groupId: number, page: number = 1) {
     this.groupService.getMembers(groupId, page).subscribe({
       next: (data) => {
-        this.members = [...this.members, ...data.content];
+        // Deduplicate by member id to prevent the same user appearing twice
+        // if loadMembers is somehow called again (e.g. route param re-emit)
+        const existingIds = new Set(this.members.map(m => m.member?.id));
+        const fresh = data.content.filter(m => !existingIds.has(m.member?.id));
+        this.members = [...this.members, ...fresh];
+
         if (data.content.length === 10) {
-          // there may be more pages
+          // There may be more pages — keep paginating
           this.loadMembers(groupId, page + 1);
         } else {
           this.loadConversation(groupId);

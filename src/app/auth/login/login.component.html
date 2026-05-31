@@ -1,40 +1,46 @@
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4" style="width: 22rem;">
-        <h3 class="text-center mb-4">Login</h3>
+<div class="login-page">
+  <div class="login-card">
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" formControlName="email" placeholder="Enter email" />
-                <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-                    class="text-danger small">
-                    A valid email is required
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" formControlName="password"
-                    placeholder="Password" />
-                <div *ngIf="loginForm?.get('password')?.invalid && loginForm?.get('password')?.touched"
-                    class="text-danger small">
-                    Password is required
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-
-            <div class="text-center mt-3">
-                <p class="mb-0">
-                    Not a member?
-                    <a href="#" (click)="navigateToSignup($event)" class="text-decoration-none">Register</a>
-                </p>
-            </div>
-        </form>
-
-        <p class="text-center mt-3">
-            <a href="#">Forgot password?</a>
-        </p>
+    <div class="login-header">
+      <div class="login-header__brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Webline</span>
+      </div>
+      <h1 class="login-header__title">Welcome back</h1>
+      <p class="login-header__sub">Sign in to continue</p>
     </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+
+      <div class="field-group">
+        <label for="email" class="field-label">Email address</label>
+        <input type="email" id="email" class="field-input" formControlName="email" placeholder="you@example.com"
+          [class.field-input--error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+        <span *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="field-error">
+          A valid email is required
+        </span>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label-row">
+          <label for="password" class="field-label">Password</label>
+          <a href="#" class="field-forgot">Forgot password?</a>
+        </div>
+        <input type="password" id="password" class="field-input" formControlName="password"
+          placeholder="Min. 10 characters"
+          [class.field-input--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+        <span *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="field-error">
+          Password is required
+        </span>
+      </div>
+
+      <button type="submit" class="btn-primary">Sign in</button>
+
+      <p class="login-footer">
+        Not a member?
+        <a href="#" (click)="navigateToSignup($event)" class="login-footer__link">Create an account</a>
+      </p>
+
+    </form>
+  </div>
 </div>

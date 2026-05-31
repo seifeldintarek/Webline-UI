@@ -1,0 +1,274 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
+:host {
+  --bg-deep: #0d0f14;
+  --bg-surface: #13161e;
+  --bg-elevated: #1a1e2a;
+  --bg-hover: #21263a;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-focus: rgba(99, 179, 237, 0.55);
+
+  --accent: #63b3ed;
+  --accent-glow: rgba(99, 179, 237, 0.18);
+  --accent-danger: #fc8181;
+  --accent-success: #68d391;
+
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-muted: #555b6e;
+  --text-label: #a0a8bc;
+
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-input: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-button: 0 4px 20px rgba(99, 179, 237, 0.30);
+
+  --transition: 0.15s ease;
+
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  display: block;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── Page ────────────────────────────────────────────────── */
+.signup-page {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse 65% 50% at 20% 10%, rgba(104, 211, 145, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 85% 80%, rgba(99, 179, 237, 0.05) 0%, transparent 55%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+}
+
+/* ── Card ────────────────────────────────────────────────── */
+.signup-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: cardIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.signup-header {
+  padding: 36px 40px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(104, 211, 145, 0.05) 0%, transparent 55%);
+    pointer-events: none;
+  }
+}
+
+.signup-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.brand-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-success);
+  box-shadow: 0 0 7px rgba(104, 211, 145, 0.65);
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.signup-header__title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.signup-header__sub {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Form ────────────────────────────────────────────────── */
+.signup-form {
+  padding: 32px 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Two-column name row ─────────────────────────────────── */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 420px) {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+/* ── Field Group ─────────────────────────────────────────── */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-label);
+  letter-spacing: 0.02em;
+}
+
+/* ── Input ───────────────────────────────────────────────── */
+.field-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 15px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  box-shadow: var(--shadow-input);
+  -webkit-appearance: none;
+
+  &::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: var(--bg-hover);
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-input);
+    background: var(--bg-hover);
+  }
+
+  &:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 40px var(--bg-elevated) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    caret-color: var(--text-primary);
+  }
+}
+
+/* ── Submit Button ───────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 13px 24px;
+  background: var(--accent-success);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #0d0f14;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: opacity var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: 0 4px 20px rgba(104, 211, 145, 0.30);
+  margin-top: 4px;
+
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 28px rgba(104, 211, 145, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+}
+
+/* ── Footer link ─────────────────────────────────────────── */
+.signup-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+
+  &__link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity var(--transition);
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .signup-header {
+    padding: 28px 24px 22px;
+  }
+
+  .signup-form {
+    padding: 24px 24px 28px;
+  }
+
+  .signup-header__title {
+    font-size: 22px;
+  }
+}
