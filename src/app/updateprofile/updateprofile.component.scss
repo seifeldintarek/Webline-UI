@@ -44,22 +44,21 @@
 
 /* ── Page Wrapper ────────────────────────────────────────── */
 .up-page {
+  width: 100%;
   min-height: 100%;
+  /* ← back to min-height, not height */
+  overflow-y: visible;
+  /* ← let the PARENT scroll, not this element */
+  box-sizing: border-box;
   background: var(--bg-deep);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 48px 16px 80px;
   font-family: var(--font-body);
-  box-sizing: border-box;
   background-image:
     radial-gradient(ellipse 60% 50% at 70% 20%, rgba(99, 179, 237, 0.06) 0%, transparent 60%),
     radial-gradient(ellipse 40% 40% at 20% 80%, rgba(104, 211, 145, 0.04) 0%, transparent 50%);
-
-  @media (max-width: 640px) {
-    padding: 24px 12px 60px;
-    align-items: flex-start;
-  }
 }
 
 /* ── Card ────────────────────────────────────────────────── */
