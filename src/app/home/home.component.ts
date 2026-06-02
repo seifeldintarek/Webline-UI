@@ -23,6 +23,9 @@ import { CallNotificationComponent } from '../call-notifier/call-notifier.compon
 export class HomeComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) { }
 
+  isSidebarOpen = true;
+
+
   ngOnInit() {
     this.authService.initUserFromToken();
   }
@@ -32,5 +35,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['login'], { replaceUrl: true })
       .catch(err => console.error('Navigation to login failed', err));
   }
+
+
 
 }
