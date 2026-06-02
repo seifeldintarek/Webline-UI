@@ -68,8 +68,13 @@
             <input id="email" type="email" class="up-input"
               [class.up-input--error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
               formControlName="email" placeholder="jane@example.com" autocomplete="email" />
-            <span class="up-error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-              Enter a valid email address.
+            <span class="up-error"
+              *ngIf="(profileForm.get('email')?.errors?.['email'] || profileForm.get('email')?.errors?.['pattern']) && profileForm.get('email')?.touched">
+              Email is not valid.
+            </span>
+            <span class="up-error"
+              *ngIf="profileForm.get('email')?.errors?.['maxlength'] && profileForm.get('email')?.touched">
+              Email must be at most 50 characters.
             </span>
           </div>
 
@@ -81,7 +86,7 @@
               formControlName="mobilePhone" placeholder="01XXXXXXXXX" autocomplete="tel" />
             <span class="up-error"
               *ngIf="profileForm.get('mobilePhone')?.invalid && profileForm.get('mobilePhone')?.touched">
-              Enter a valid Egyptian mobile number.
+              Mobile phone must be 11 digits and start with 01.
             </span>
           </div>
         </section>

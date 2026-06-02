@@ -75,7 +75,7 @@ export class FriendshipComponent implements OnInit {
               switchMap(() => this.messageService.deleteConversation(data.id!))
             ).subscribe({
               next: () => {
-                console.log('Messages and conversation deleted successfully');
+                alert('Messages and conversation deleted successfully');
                 this.friends = this.friends.filter(req => req.id !== uid);
                 this.router.navigate(['friends']);
               },

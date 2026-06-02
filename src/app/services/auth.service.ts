@@ -54,7 +54,7 @@ export class AuthService {
       next: (user) => {
         this.currentUser = user;
       },
-      error: (error) => console.log('Error fetching user info:', error)
+      error: (error) => alert('Error fetching user info:' + error)
     });
   }
 

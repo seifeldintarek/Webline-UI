@@ -56,7 +56,12 @@ export class UpdateProfileComponent implements OnInit {
     this.profileForm = new FormGroup({
       firstName: new FormControl(user?.firstName || ''),
       lastName: new FormControl(user?.lastName || ''),
-      email: new FormControl(user?.email || '', [Validators.email]),
+      email: new FormControl(user?.email || '', [
+        Validators.email,
+        Validators.maxLength(50),
+        // Mirrors the @Size(max = 50) and @Pattern on User.email
+        Validators.pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+      ]),
       mobilePhone: new FormControl(normalizeEgPhone(user?.mobilePhone), [
         Validators.pattern(/^01[0125][0-9]{8}$/)
       ]),
@@ -108,6 +113,16 @@ export class UpdateProfileComponent implements OnInit {
 
     if (this.image) {
       updatedUser.image = this.image;
+      this.userService.setImage(this.image).subscribe({
+        next: (res) => {
+          const user = this.authService.getUser()!;
+          user.image = this.image;
+          this.authService.setCurrentUser(user);
+        },
+        error: (err) => {
+          alert("error uploading new profile picture")
+        }
+      });
     }
 
     this.userService.updateUser(updatedUser)?.subscribe({
@@ -115,7 +130,7 @@ export class UpdateProfileComponent implements OnInit {
         this.authService.setCurrentUser(res);
       },
       error: (err) => {
-        console.error('Profile update failed:', err);
+        alert('Profile update failed:' + err);
       }
     });
   }
@@ -127,7 +142,7 @@ export class UpdateProfileComponent implements OnInit {
     const file = input.files[0];
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
-      console.error('Invalid file type. Only JPEG/PNG allowed.');
+      alert('Invalid file type. Only JPEG/PNG allowed.');
       return;
     }
 

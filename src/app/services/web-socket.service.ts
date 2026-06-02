@@ -142,7 +142,7 @@ export class WebSocketService {
           body: JSON.stringify(messageObj),
         });
       },
-      error: (err: any) => console.error(`${contentType} upload failed:`, err)
+      error: (err: any) => alert(`${contentType} upload failed:` + err)
     });
   }
 

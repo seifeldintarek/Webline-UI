@@ -27,7 +27,13 @@ export class SignupComponent implements OnInit {
     this.signupForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      email: ['', [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(50),
+        // Mirrors the @Pattern on User.email so the client rejects what the API would reject
+        Validators.pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+      ]],
       mobilePhone: ['', [Validators.pattern('^01[0125][0-9]{8}$'), Validators.minLength(11), Validators.maxLength(11)]],
       password: ['', [Validators.required, Validators.minLength(10)]],
       image: ['']
@@ -55,20 +61,8 @@ export class SignupComponent implements OnInit {
       });
     }
     else {
-      const errors: string[] = [];
-
-      Object.keys(this.signupForm.controls).forEach(key => {
-        const controlErrors = this.signupForm.get(key)?.errors;
-        if (controlErrors) {
-          Object.keys(controlErrors).forEach(errorKey => {
-            errors.push(`${key} has error: ${errorKey}`);
-          });
-        }
-      });
-
-      alert('Invalid input:\n' + errors.join('\n'));
+      // Reveal the inline validation messages for every field at once.
+      this.signupForm.markAllAsTouched();
     }
   }
 }
-
-

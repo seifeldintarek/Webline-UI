@@ -15,29 +15,65 @@
       <div class="field-row">
         <div class="field-group">
           <label for="firstName" class="field-label">First Name</label>
-          <input type="text" id="firstName" class="field-input" formControlName="firstName" placeholder="Omar" />
+          <input type="text" id="firstName" class="field-input" formControlName="firstName" placeholder="Omar"
+            [class.field-input--error]="signupForm.get('firstName')?.invalid && (signupForm.get('firstName')?.touched || signupForm.get('firstName')?.dirty)" />
+          <span class="field-error"
+            *ngIf="signupForm.get('firstName')?.errors?.['required'] && (signupForm.get('firstName')?.touched || signupForm.get('firstName')?.dirty)">
+            First name is required.
+          </span>
         </div>
         <div class="field-group">
           <label for="lastName" class="field-label">Last Name</label>
-          <input type="text" id="lastName" class="field-input" formControlName="lastName" placeholder="Marei" />
+          <input type="text" id="lastName" class="field-input" formControlName="lastName" placeholder="Marei"
+            [class.field-input--error]="signupForm.get('lastName')?.invalid && (signupForm.get('lastName')?.touched || signupForm.get('lastName')?.dirty)" />
+          <span class="field-error"
+            *ngIf="signupForm.get('lastName')?.errors?.['required'] && (signupForm.get('lastName')?.touched || signupForm.get('lastName')?.dirty)">
+            Last name is required.
+          </span>
         </div>
       </div>
 
       <div class="field-group">
         <label for="email" class="field-label">Email address</label>
-        <input type="email" id="email" class="field-input" formControlName="email" placeholder="you@example.com" />
+        <input type="email" id="email" class="field-input" formControlName="email" placeholder="you@example.com"
+          [class.field-input--error]="signupForm.get('email')?.invalid && (signupForm.get('email')?.touched || signupForm.get('email')?.dirty)" />
+        <span class="field-error"
+          *ngIf="signupForm.get('email')?.errors?.['required'] && (signupForm.get('email')?.touched || signupForm.get('email')?.dirty)">
+          Email is required.
+        </span>
+        <span class="field-error"
+          *ngIf="(signupForm.get('email')?.errors?.['email'] || signupForm.get('email')?.errors?.['pattern']) && (signupForm.get('email')?.touched || signupForm.get('email')?.dirty)">
+          Email is not valid.
+        </span>
+        <span class="field-error"
+          *ngIf="signupForm.get('email')?.errors?.['maxlength'] && (signupForm.get('email')?.touched || signupForm.get('email')?.dirty)">
+          Email must be at most 50 characters.
+        </span>
       </div>
 
       <div class="field-group">
         <label for="mobilePhone" class="field-label">Mobile Phone</label>
-        <input type="tel" id="mobilePhone" class="field-input" formControlName="mobilePhone"
-          placeholder="+20 100 000 0000" />
+        <input type="tel" id="mobilePhone" class="field-input" formControlName="mobilePhone" placeholder="01XXXXXXXXX"
+          [class.field-input--error]="signupForm.get('mobilePhone')?.invalid && (signupForm.get('mobilePhone')?.touched || signupForm.get('mobilePhone')?.dirty)" />
+        <span class="field-error"
+          *ngIf="signupForm.get('mobilePhone')?.invalid && (signupForm.get('mobilePhone')?.touched || signupForm.get('mobilePhone')?.dirty)">
+          Mobile phone must be 11 digits and start with 01.
+        </span>
       </div>
 
       <div class="field-group">
         <label for="password" class="field-label">Password</label>
         <input type="password" id="password" class="field-input" formControlName="password"
-          placeholder="Min. 10 characters" />
+          placeholder="Min. 10 characters"
+          [class.field-input--error]="signupForm.get('password')?.invalid && (signupForm.get('password')?.touched || signupForm.get('password')?.dirty)" />
+        <span class="field-error"
+          *ngIf="signupForm.get('password')?.errors?.['required'] && (signupForm.get('password')?.touched || signupForm.get('password')?.dirty)">
+          Password is required.
+        </span>
+        <span class="field-error"
+          *ngIf="signupForm.get('password')?.errors?.['minlength'] && (signupForm.get('password')?.touched || signupForm.get('password')?.dirty)">
+          Password must be at least 10 characters.
+        </span>
       </div>
 
       <button type="submit" class="btn-primary">Create account</button>
