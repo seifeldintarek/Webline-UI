@@ -118,6 +118,7 @@ export class UpdateProfileComponent implements OnInit {
           const user = this.authService.getUser()!;
           user.image = this.image;
           this.authService.setCurrentUser(user);
+          alert('Profile picture updated successfully');
         },
         error: (err) => {
           alert("error uploading new profile picture")
