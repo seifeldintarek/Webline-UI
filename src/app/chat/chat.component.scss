@@ -16,6 +16,12 @@ $bubble-recv: #1c2333;
 $radius-pill: 999px;
 $transition: 0.18s ease;
 
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
 // ── Shell ─────────────────────────────────────────────────────────────────────
 .chat-container {
   display: flex;

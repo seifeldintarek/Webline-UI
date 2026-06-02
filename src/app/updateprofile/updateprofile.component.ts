@@ -21,6 +21,17 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   return password === confirm ? null : { mismatch: true };
 }
 
+// Normalize a stored phone number to the local 01XXXXXXXXX shape the regex expects.
+// Without this, a pre-filled value in international/spaced format (+20..., "012 345...")
+// fails Validators.pattern, the form starts invalid, and the Save button is dead on load.
+function normalizeEgPhone(value: string | null | undefined): string {
+  if (!value) return '';
+  return value
+    .replace(/[\s-]/g, '')   // strip spaces and dashes
+    .replace(/^\+20/, '0')   // +2010... -> 010...
+    .replace(/^0020/, '0');  // 002010... -> 010...
+}
+
 @Component({
   selector: 'app-updateprofile',
   standalone: true,
@@ -46,7 +57,7 @@ export class UpdateProfileComponent implements OnInit {
       firstName: new FormControl(user?.firstName || ''),
       lastName: new FormControl(user?.lastName || ''),
       email: new FormControl(user?.email || '', [Validators.email]),
-      mobilePhone: new FormControl(user?.mobilePhone || '', [
+      mobilePhone: new FormControl(normalizeEgPhone(user?.mobilePhone), [
         Validators.pattern(/^01[0125][0-9]{8}$/)
       ]),
       password: new FormControl('', [Validators.minLength(10)]),
@@ -66,7 +77,11 @@ export class UpdateProfileComponent implements OnInit {
 
   onSubmit() {
     if (!this.profileForm.valid) {
+      // Reveal which fields are blocking submission instead of failing silently.
       this.profileForm.markAllAsTouched();
+      Object.entries(this.profileForm.controls)
+        .filter(([, c]) => c.invalid)
+        .forEach(([name, c]) => console.warn('Invalid field:', name, c.errors, c.value));
       return;
     }
 
@@ -82,9 +97,17 @@ export class UpdateProfileComponent implements OnInit {
       image: this.image ?? null,
     };
 
-    this.userService.updateUser(updatedUser)?.subscribe({
+    // Do NOT use optional chaining on subscribe. If updateUser() returns undefined,
+    // `?.subscribe` silently skips the call and no HTTP request is ever sent.
+    const request = this.userService.updateUser(updatedUser);
+    if (!request) {
+      console.error('updateUser() returned nothing — no request was sent. Check UserService.updateUser().');
+      return;
+    }
+
+    request.subscribe({
       next: (res) => this.authService.setCurrentUser(res),
-      error: (e) => console.error(e)
+      error: (e) => console.error('Profile update failed:', e)
     });
   }
 
