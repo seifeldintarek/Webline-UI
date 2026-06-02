@@ -76,38 +76,47 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    if (!this.profileForm.valid) {
-      // Reveal which fields are blocking submission instead of failing silently.
-      this.profileForm.markAllAsTouched();
-      Object.entries(this.profileForm.controls)
-        .filter(([, c]) => c.invalid)
-        .forEach(([name, c]) => console.warn('Invalid field:', name, c.errors, c.value));
-      return;
-    }
-
-    const formData = this.profileForm.value;
-
-    const updatedUser: UserModel = {
-      firstName: formData.firstName ?? null,
-      lastName: formData.lastName ?? null,
-      email: formData.email ?? null,
-      mobilePhone: formData.mobilePhone ?? null,
-      password: formData.password || null,
-      id: this.authService.getId()!,
-      image: this.image ?? null,
+    const updatedUser: any = {
+      id: this.authService.getId()
     };
 
-    // Do NOT use optional chaining on subscribe. If updateUser() returns undefined,
-    // `?.subscribe` silently skips the call and no HTTP request is ever sent.
-    const request = this.userService.updateUser(updatedUser);
-    if (!request) {
-      console.error('updateUser() returned nothing — no request was sent. Check UserService.updateUser().');
-      return;
+    const firstName = this.profileForm.get('firstName');
+    const lastName = this.profileForm.get('lastName');
+    const email = this.profileForm.get('email');
+    const mobilePhone = this.profileForm.get('mobilePhone');
+    const password = this.profileForm.get('password');
+
+    if (firstName?.value?.trim()) {
+      updatedUser.firstName = firstName.value.trim();
     }
 
-    request.subscribe({
-      next: (res) => this.authService.setCurrentUser(res),
-      error: (e) => console.error('Profile update failed:', e)
+    if (lastName?.value?.trim()) {
+      updatedUser.lastName = lastName.value.trim();
+    }
+
+    if (email?.value?.trim() && email.valid) {
+      updatedUser.email = email.value.trim();
+    }
+
+    if (mobilePhone?.value?.trim() && mobilePhone.valid) {
+      updatedUser.mobilePhone = mobilePhone.value.trim();
+    }
+
+    if (password?.value?.trim() && password.valid) {
+      updatedUser.password = password.value;
+    }
+
+    if (this.image) {
+      updatedUser.image = this.image;
+    }
+
+    this.userService.updateUser(updatedUser)?.subscribe({
+      next: (res) => {
+        this.authService.setCurrentUser(res);
+      },
+      error: (err) => {
+        console.error('Profile update failed:', err);
+      }
     });
   }
 
