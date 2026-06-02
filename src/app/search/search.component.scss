@@ -12,20 +12,20 @@ html,
 body {
   height: 100%;
   width: 100%;
-  --bg-deep: #0d0f14;
-  --bg-surface: #13161e;
-  --bg-elevated: #1a1e2a;
-  --bg-hover: #21263a;
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  --bg-deep: #0f1117;
+  --bg-surface: #161b27;
+  --bg-elevated: #1c2333;
+  --bg-hover: #232b3e;
+  --border-subtle: rgba(255, 255, 255, 0.07);
   --border-default: rgba(255, 255, 255, 0.10);
-  --border-focus: rgba(99, 179, 237, 0.55);
-  --accent: #63b3ed;
-  --accent-glow: rgba(99, 179, 237, 0.18);
-  --accent-danger: #fc8181;
+  --border-focus: rgba(79, 142, 247, 0.55);
+  --accent: #4f8ef7;
+  --accent-glow: rgba(79, 142, 247, 0.18);
+  --accent-danger: #f43f5e;
   --accent-success: #68d391;
   --text-primary: #e8eaf0;
-  --text-secondary: #8b90a0;
-  --text-muted: #555b6e;
+  --text-secondary: #8892a4;
+  --text-muted: #5a6478;
   --text-label: #a0a8bc;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -48,7 +48,7 @@ body {
   -webkit-overflow-scrolling: touch;
   background: var(--bg-deep);
   background-image:
-    radial-gradient(ellipse 60% 40% at 80% 5%, rgba(99, 179, 237, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 40% at 80% 5%, rgba(79, 142, 247, 0.04) 0%, transparent 60%);
   box-sizing: border-box;
   padding: 28px 28px 20px;
   gap: 20px;

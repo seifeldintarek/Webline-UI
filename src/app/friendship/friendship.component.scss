@@ -32,12 +32,16 @@ body {
 
 .main-container {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
   background: $bg-primary;
   font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+.main-container:has(.chat-panel > router-outlet ~ *) {
+  grid-template-columns: 1fr 420px; // reserve only when chat is open
 }
 
 .friends-container {
@@ -235,6 +239,11 @@ body {
   overflow: hidden;
   border-left: 1px solid $border-color;
   background: $bg-secondary;
+  display: none;
+}
+
+.chat-panel:has(router-outlet ~ *) {
+  display: block;
 }
 
 .empty-state {
@@ -263,42 +272,20 @@ body {
   }
 }
 
-@media (max-width: 480px) {
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 960px) {
   .main-container {
     grid-template-columns: 1fr;
-    height: 100%;
+  }
+
+  // even when a chat is open, keep one column — the panel is overlaid (fixed)
+  .main-container:has(.chat-panel > router-outlet ~ *) {
+    grid-template-columns: 1fr;
   }
 
   .friends-container {
-    padding: 16px 14px 14px;
-    overflow-y: hidden;
-  }
-
-  .friends-header h2 {
-    font-size: 18px;
-  }
-
-  .friends-header p {
-    font-size: 12px;
-  }
-
-  .result-item {
-    padding: 10px 12px;
-    gap: 10px;
-  }
-
-  .avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 15px;
-  }
-
-  .fullName {
-    font-size: 13px;
-  }
-
-  .email {
-    font-size: 11px;
+    height: 100vh;
+    height: 100dvh;
   }
 
   .chat-panel {
@@ -306,86 +293,43 @@ body {
     inset: 0;
     z-index: 50;
     background: $bg-secondary;
+    border-left: none;
+    display: none; // hidden until a chat opens
+  }
 
-    &:empty {
-      display: none;
-    }
+  .chat-panel:has(router-outlet ~ *) {
+    display: block; // full-screen overlay when open
   }
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
-  .main-container {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 640px) {
   .friends-container {
-    padding: 22px 20px 16px;
-    overflow-y: hidden;
+    padding: 16px 14px 10px;
   }
 
   .friends-header h2 {
     font-size: 20px;
   }
+}
 
+@media (max-width: 480px) {
   .result-item {
-    padding: 11px 14px;
+    padding: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .avatar {
     width: 40px;
     height: 40px;
-  }
-
-  .chat-panel {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    background: $bg-secondary;
-
-    &:empty {
-      display: none;
-    }
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1280px) {
-  .main-container {
-    grid-template-columns: 1fr 360px;
-  }
-
-  .friends-container {
-    padding: 28px 24px 16px;
-  }
-
-  .friends-header h2 {
-    font-size: 23px;
-  }
-}
-
-@media (min-width: 1281px) {
-  .main-container {
-    grid-template-columns: 1fr 420px;
-  }
-
-  .friends-container {
-    padding: 36px 28px 20px;
-  }
-
-  .friends-header h2 {
-    font-size: 28px;
-  }
-
-  .result-item {
-    padding: 16px 18px;
-  }
-
-  .avatar {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
+    font-size: 15px;
   }
 
   .fullName {
-    font-size: 16px;
+    font-size: 14px;
+  }
+
+  .email {
+    font-size: 12px;
   }
 }

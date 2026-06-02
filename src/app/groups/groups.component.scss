@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
 // ── Design Tokens ─────────────────────────────────────────────────────────────
 $bg-primary: #0f1117;
 $bg-secondary: #161b27;
@@ -21,11 +23,16 @@ $transition: 0.18s ease;
 // ── Layout ────────────────────────────────────────────────────────────────────
 .main-container {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: $bg-primary;
-  font-family: 'Segoe UI', 'Inter', sans-serif;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+.main-container:has(.chat-panel > router-outlet ~ *) {
+  grid-template-columns: 1fr 420px; // reserve only when chat is open
 }
 
 // ── Groups panel ──────────────────────────────────────────────────────────────
@@ -33,6 +40,7 @@ $transition: 0.18s ease;
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   padding: 28px 24px 16px;
   box-sizing: border-box;
   background: $bg-primary;
@@ -236,9 +244,15 @@ $transition: 0.18s ease;
 // ── Chat panel ────────────────────────────────────────────────────────────────
 .chat-panel {
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   border-left: 1px solid $border-color;
   background: $bg-secondary;
+  display: none;
+}
+
+.chat-panel:has(router-outlet ~ *) {
+  display: block;
 }
 
 // ── Modal overlay ─────────────────────────────────────────────────────────────
@@ -465,8 +479,14 @@ $transition: 0.18s ease;
     grid-template-columns: 1fr;
   }
 
+  // even when a chat is open, keep one column — the panel is overlaid (fixed)
+  .main-container:has(.chat-panel > router-outlet ~ *) {
+    grid-template-columns: 1fr;
+  }
+
   .groups-container {
     height: 100vh;
+    height: 100dvh;
   }
 
   .chat-panel {
@@ -475,10 +495,11 @@ $transition: 0.18s ease;
     z-index: 50;
     background: $bg-secondary;
     border-left: none;
+    display: none; // hidden until a chat opens
+  }
 
-    &:empty {
-      display: none;
-    }
+  .chat-panel:has(router-outlet ~ *) {
+    display: block; // full-screen overlay when open
   }
 }
 

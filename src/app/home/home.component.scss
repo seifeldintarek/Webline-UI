@@ -14,21 +14,21 @@ html,
 body {
   height: 100%;
   width: 100%;
-  --bg-deep: #0d0f14;
-  --bg-surface: #13161e;
-  --bg-elevated: #1a1e2a;
-  --bg-hover: #21263a;
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  --bg-deep: #0f1117;
+  --bg-surface: #161b27;
+  --bg-elevated: #1c2333;
+  --bg-hover: #232b3e;
+  --border-subtle: rgba(255, 255, 255, 0.07);
   --border-default: rgba(255, 255, 255, 0.10);
-  --accent: #63b3ed;
-  --accent-glow: rgba(99, 179, 237, 0.18);
-  --accent-danger: #fc8181;
+  --accent: #4f8ef7;
+  --accent-glow: rgba(79, 142, 247, 0.18);
+  --accent-danger: #f43f5e;
   --accent-success: #68d391;
   --accent-amber: #f6ad55;
   --accent-purple: #b794f4;
   --text-primary: #e8eaf0;
-  --text-secondary: #8b90a0;
-  --text-muted: #555b6e;
+  --text-secondary: #8892a4;
+  --text-muted: #5a6478;
   --font-body: 'DM Sans', sans-serif;
   --font-mono: 'DM Mono', monospace;
   --sidebar-w: 200px;
@@ -141,7 +141,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 120% 50% at -20% 40%, rgba(99, 179, 237, 0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse 120% 50% at -20% 40%, rgba(79, 142, 247, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -159,7 +159,7 @@ body {
   height: 7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 6px rgba(99, 179, 237, 0.6);
+  box-shadow: 0 0 6px rgba(79, 142, 247, 0.6);
   flex-shrink: 0;
 }
 
@@ -220,8 +220,8 @@ body {
 
 .sidebar button.active {
   color: var(--accent);
-  background: rgba(99, 179, 237, 0.08);
-  border-color: rgba(99, 179, 237, 0.2);
+  background: rgba(79, 142, 247, 0.08);
+  border-color: rgba(79, 142, 247, 0.2);
 }
 
 .sidebar button.active::after {
@@ -233,7 +233,7 @@ body {
   height: 60%;
   background: var(--accent);
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 6px rgba(99, 179, 237, 0.5);
+  box-shadow: 0 0 6px rgba(79, 142, 247, 0.5);
 }
 
 .icon-btn {
@@ -254,7 +254,7 @@ body {
 .icon-btn:hover {
   border-color: var(--accent) !important;
   color: var(--accent) !important;
-  background: rgba(99, 179, 237, 0.06) !important;
+  background: rgba(79, 142, 247, 0.06) !important;
 }
 
 .icon-btn.active {
@@ -268,17 +268,17 @@ button[routerlink='/home/friends']::before {
 
 button[routerlink='/home/friends']:hover,
 button[routerlink='/home/friends'].active {
-  color: #90cdf4;
+  color: #4f8ef7;
 }
 
 button[routerlink='/home/friends'].active {
-  background: rgba(144, 205, 244, 0.08);
-  border-color: rgba(144, 205, 244, 0.2);
+  background: rgba(79, 142, 247, 0.08);
+  border-color: rgba(79, 142, 247, 0.2);
 }
 
 button[routerlink='/home/friends'].active::after {
-  background: #90cdf4;
-  box-shadow: 0 0 6px rgba(144, 205, 244, 0.5);
+  background: #4f8ef7;
+  box-shadow: 0 0 6px rgba(79, 142, 247, 0.5);
 }
 
 button[routerlink='/home/groups']::before {
@@ -371,9 +371,9 @@ button[routerlink='/home/update-profile'].active::after {
 }
 
 .sidebar button:last-child:hover {
-  background: rgba(252, 129, 129, 0.07);
+  background: rgba(244, 63, 94, 0.07);
   color: var(--accent-danger);
-  border-color: rgba(252, 129, 129, 0.18);
+  border-color: rgba(244, 63, 94, 0.18);
 }
 
 /* ── Content — child screens live here ───────────────────── */
@@ -388,7 +388,7 @@ button[routerlink='/home/update-profile'].active::after {
   -webkit-overflow-scrolling: touch;
   background: var(--bg-deep);
   background-image:
-    radial-gradient(ellipse 55% 45% at 80% 10%, rgba(99, 179, 237, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 80% 10%, rgba(79, 142, 247, 0.04) 0%, transparent 60%),
     radial-gradient(ellipse 35% 35% at 10% 85%, rgba(104, 211, 145, 0.03) 0%, transparent 50%);
 }
 
