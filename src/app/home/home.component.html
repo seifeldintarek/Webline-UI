@@ -1,7 +1,8 @@
 <div class="home-wrapper">
 
   <!-- Toggle button — always visible, sits outside the sidebar -->
-  <button class="sidebar__toggle" (click)="isSidebarOpen = !isSidebarOpen" title="Toggle menu">
+  <button class="sidebar__toggle" [class.is-open]="isSidebarOpen" (click)="isSidebarOpen = !isSidebarOpen"
+    title="Toggle menu">
     <span></span>
     <span></span>
     <span></span>

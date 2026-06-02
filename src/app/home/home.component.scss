@@ -8,6 +8,8 @@
   padding: 0;
 }
 
+/* These tokens are now defined globally in styles.scss (:root).
+   They're kept here as a harmless fallback — safe to delete. */
 html,
 body {
   height: 100%;
@@ -42,29 +44,30 @@ body {
   font-family: var(--font-body);
 }
 
-
-// ── Sidebar toggle button ─────────────────────────────────
+/* ── Sidebar toggle button ───────────────────────────────── */
 .sidebar__toggle {
   position: fixed;
   top: 16px;
   left: 16px;
   z-index: 200;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-default);
+  border-radius: 9px;
   background: var(--bg-elevated);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 6px;
-  transition: background 0.15s ease, left 0.25s ease;
+  padding: 9px;
+  transition: background 0.15s ease, left 0.25s ease, border-color 0.15s ease;
 
   &:hover {
     background: var(--bg-hover);
+    border-color: var(--accent);
   }
 
   span {
@@ -72,16 +75,31 @@ body {
     width: 100%;
     height: 2px;
     border-radius: 2px;
-    background: var(--text-secondary);
-    transition: background 0.15s ease;
+    background: var(--text-primary);
+    transition: transform 0.25s ease, opacity 0.2s ease, background 0.15s ease;
   }
 
   &:hover span {
-    background: var(--text-primary);
+    background: var(--accent);
+  }
+
+  /* Drawer open: slide to sidebar edge so it stops covering the logo */
+  &.is-open {
+    left: 182px;
+  }
+
+  &.is-open span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  &.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  &.is-open span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
   }
 }
-
-
 
 .sidebar {
   width: var(--sidebar-w);
@@ -96,8 +114,6 @@ body {
   position: relative;
   gap: 4px;
   z-index: 100;
-
-  // ── Drawer transition ─────────────────────────────────
   overflow: hidden;
   transition: width 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
 
@@ -360,7 +376,7 @@ button[routerlink='/home/update-profile'].active::after {
   border-color: rgba(252, 129, 129, 0.18);
 }
 
-/* ── Content — this is where child screens live ──────────── */
+/* ── Content — child screens live here ───────────────────── */
 .content {
   flex: 1;
   min-width: 0;
@@ -405,15 +421,17 @@ router-outlet~* {
 }
 
 /* ══════════════════════════════════════════════════════════
-   BREAKPOINTS — sidebar shrinks so content gets full width
-   matching exactly what search / requests / update-profile
-   expect at each breakpoint
+   BREAKPOINTS
 ══════════════════════════════════════════════════════════ */
 
-/* Mobile ≤480px — content gets full width, sidebar becomes top bar */
+/* Mobile ≤480px — sidebar becomes a full-width top bar */
 @media (max-width: 480px) {
   .home-wrapper {
     flex-direction: column;
+  }
+
+  .sidebar__toggle {
+    display: none; // top bar is always visible here
   }
 
   .sidebar {
@@ -429,6 +447,14 @@ router-outlet~* {
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
     flex-shrink: 0;
+  }
+
+  /* keep the top bar visible even if collapsed on a bigger screen first */
+  .sidebar.collapsed {
+    width: 100% !important;
+    padding: 10px 12px !important;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .sidebar::before {
@@ -459,7 +485,6 @@ router-outlet~* {
     white-space: nowrap;
   }
 
-  /* content fills remaining height — child screens use padding 16px 14px matching their mobile breakpoint */
   .content {
     flex: 1;
     min-height: 0;
@@ -471,7 +496,7 @@ router-outlet~* {
   }
 }
 
-/* Tablet 481px–768px — icon-only sidebar 60px, content gets ~calc(100% - 60px) */
+/* Tablet 481–768px — icon-only sidebar 60px */
 @media (min-width: 481px) and (max-width: 768px) {
   .sidebar {
     width: 60px;
@@ -479,6 +504,10 @@ router-outlet~* {
     align-items: center;
     gap: 6px;
     overflow: hidden;
+  }
+
+  .sidebar__toggle.is-open {
+    left: 42px;
   }
 
   .sidebar__logo {
@@ -508,17 +537,20 @@ router-outlet~* {
     width: auto;
   }
 
-  /* content width = 100% - 60px, matching tablet padding 22px 20px of child screens */
   .content {
     overflow-y: auto;
   }
 }
 
-/* Laptop 769px–1280px — sidebar 180px, content gets remaining ~calc(100% - 180px) */
+/* Laptop 769–1280px — sidebar 180px */
 @media (min-width: 769px) and (max-width: 1280px) {
   .sidebar {
     width: 180px;
     padding: 22px 10px 18px;
+  }
+
+  .sidebar__toggle.is-open {
+    left: 162px;
   }
 
   .sidebar button {
@@ -526,17 +558,20 @@ router-outlet~* {
     padding: 8px 10px;
   }
 
-  /* content fills rest — child screens use padding 28px 28px at laptop breakpoint */
   .content {
     overflow-y: auto;
   }
 }
 
-/* Desktop 1281px+ — sidebar 220px, content gets remaining ~calc(100% - 220px) */
+/* Desktop 1281px+ — sidebar 220px */
 @media (min-width: 1281px) {
   .sidebar {
     width: 220px;
     padding: 28px 14px 24px;
+  }
+
+  .sidebar__toggle.is-open {
+    left: 202px;
   }
 
   .sidebar button {
@@ -544,7 +579,6 @@ router-outlet~* {
     padding: 10px 14px;
   }
 
-  /* content fills rest — child screens use padding 36px 36px at desktop breakpoint */
   .content {
     overflow-y: auto;
   }
